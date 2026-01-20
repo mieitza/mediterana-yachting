@@ -15,8 +15,8 @@ import {
 } from "@/lib/sanity/queries";
 import type { Yacht, Destination, Post, HomePage } from "@/lib/sanity/types";
 
-// Revalidate every hour
-export const revalidate = 3600;
+// Disable caching to always fetch fresh data
+export const revalidate = 0;
 
 // Icon mapping
 const iconMap: Record<string, any> = {

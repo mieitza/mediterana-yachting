@@ -13,7 +13,7 @@ export const sanityClient: SanityClient | null = isSanityConfigured
       projectId: projectId!,
       dataset,
       apiVersion: "2024-01-01",
-      useCdn: process.env.NODE_ENV === "production",
+      useCdn: false, // Disable CDN to always get fresh data
     })
   : null;
 

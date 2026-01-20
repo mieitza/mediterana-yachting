@@ -9,7 +9,7 @@ import { sanityClient, isSanityConfigured } from "@/lib/sanity/client";
 import { aboutPageQuery } from "@/lib/sanity/queries";
 import type { AboutPage, TeamMember } from "@/lib/sanity/types";
 
-export const revalidate = 3600;
+export const revalidate = 0; // Disable caching to always fetch fresh data
 
 // Icon mapping
 const iconMap: Record<string, any> = {
