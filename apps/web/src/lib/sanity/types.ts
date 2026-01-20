@@ -115,6 +115,132 @@ export interface PageSection {
   };
 }
 
+// Team Member
+export interface TeamMember {
+  _id: string;
+  _type: "teamMember";
+  name: string;
+  role: string;
+  image: ExternalImage;
+  bio: string;
+  email?: string;
+  linkedin?: string;
+  order?: number;
+}
+
+// Home Page Content
+export interface HomePage {
+  heroTitle?: string;
+  heroTitleHighlight?: string;
+  heroSubtitle?: string;
+  heroImage?: ExternalImage;
+  heroPrimaryCtaText?: string;
+  heroPrimaryCtaLink?: string;
+  heroSecondaryCtaText?: string;
+  heroSecondaryCtaLink?: string;
+  yachtsTitle?: string;
+  yachtsSubtitle?: string;
+  yachtsCtaText?: string;
+  destinationsTitle?: string;
+  destinationsSubtitle?: string;
+  destinationsCtaText?: string;
+  whyTitle?: string;
+  whySubtitle?: string;
+  whyFeatures?: Array<{
+    icon?: string;
+    title?: string;
+    description?: string;
+  }>;
+  processTitle?: string;
+  processSubtitle?: string;
+  processSteps?: Array<{
+    icon?: string;
+    title?: string;
+    description?: string;
+  }>;
+  blogTitle?: string;
+  blogSubtitle?: string;
+  blogCtaText?: string;
+  ctaTitle?: string;
+  ctaSubtitle?: string;
+  ctaImage?: ExternalImage;
+  ctaPrimaryText?: string;
+  ctaPrimaryLink?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryLink?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+// About Page Content
+export interface AboutPage {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: ExternalImage;
+  storyTitle?: string;
+  storyContent?: any[]; // Portable Text
+  storyImage?: ExternalImage;
+  storyCtaText?: string;
+  storyCtaLink?: string;
+  stats?: Array<{
+    value?: string;
+    label?: string;
+  }>;
+  valuesTitle?: string;
+  valuesSubtitle?: string;
+  values?: Array<{
+    icon?: string;
+    title?: string;
+    description?: string;
+  }>;
+  processTitle?: string;
+  processSubtitle?: string;
+  processSteps?: Array<{
+    title?: string;
+    description?: string;
+  }>;
+  teamTitle?: string;
+  teamSubtitle?: string;
+  teamMembers?: TeamMember[];
+  ctaTitle?: string;
+  ctaSubtitle?: string;
+  ctaPrimaryText?: string;
+  ctaPrimaryLink?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryLink?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+// Contact Page Content
+export interface ContactPage {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: ExternalImage;
+  contactTitle?: string;
+  contactDescription?: string;
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+  location?: string;
+  address?: string;
+  officeHours?: Array<{
+    days?: string;
+    hours?: string;
+  }>;
+  timezone?: string;
+  formTitle?: string;
+  formDescription?: string;
+  faqTitle?: string;
+  faqDescription?: string;
+  faqs?: Array<{
+    question?: string;
+    answer?: string;
+  }>;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
 // Inquiry Form Data
 export interface InquiryFormData {
   name: string;

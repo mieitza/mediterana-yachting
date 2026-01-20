@@ -176,3 +176,119 @@ export const featuredYachtsQuery = groq`
     pricing
   }
 `;
+
+// Home Page Content
+export const homePageQuery = groq`
+  *[_type == "homePage"][0] {
+    heroTitle,
+    heroTitleHighlight,
+    heroSubtitle,
+    heroImage,
+    heroPrimaryCtaText,
+    heroPrimaryCtaLink,
+    heroSecondaryCtaText,
+    heroSecondaryCtaLink,
+    yachtsTitle,
+    yachtsSubtitle,
+    yachtsCtaText,
+    destinationsTitle,
+    destinationsSubtitle,
+    destinationsCtaText,
+    whyTitle,
+    whySubtitle,
+    whyFeatures,
+    processTitle,
+    processSubtitle,
+    processSteps,
+    blogTitle,
+    blogSubtitle,
+    blogCtaText,
+    ctaTitle,
+    ctaSubtitle,
+    ctaImage,
+    ctaPrimaryText,
+    ctaPrimaryLink,
+    ctaSecondaryText,
+    ctaSecondaryLink,
+    seoTitle,
+    seoDescription
+  }
+`;
+
+// About Page Content
+export const aboutPageQuery = groq`
+  *[_type == "aboutPage"][0] {
+    heroTitle,
+    heroSubtitle,
+    heroImage,
+    storyTitle,
+    storyContent,
+    storyImage,
+    storyCtaText,
+    storyCtaLink,
+    stats,
+    valuesTitle,
+    valuesSubtitle,
+    values,
+    processTitle,
+    processSubtitle,
+    processSteps,
+    teamTitle,
+    teamSubtitle,
+    "teamMembers": teamMembers[]-> {
+      _id,
+      name,
+      role,
+      image,
+      bio,
+      email,
+      linkedin
+    },
+    ctaTitle,
+    ctaSubtitle,
+    ctaPrimaryText,
+    ctaPrimaryLink,
+    ctaSecondaryText,
+    ctaSecondaryLink,
+    seoTitle,
+    seoDescription
+  }
+`;
+
+// Contact Page Content
+export const contactPageQuery = groq`
+  *[_type == "contactPage"][0] {
+    heroTitle,
+    heroSubtitle,
+    heroImage,
+    contactTitle,
+    contactDescription,
+    email,
+    phone,
+    whatsapp,
+    location,
+    address,
+    officeHours,
+    timezone,
+    formTitle,
+    formDescription,
+    faqTitle,
+    faqDescription,
+    faqs,
+    seoTitle,
+    seoDescription
+  }
+`;
+
+// All Team Members
+export const allTeamMembersQuery = groq`
+  *[_type == "teamMember"] | order(order asc, name asc) {
+    _id,
+    name,
+    role,
+    image,
+    bio,
+    email,
+    linkedin
+  }
+`;

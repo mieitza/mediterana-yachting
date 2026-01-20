@@ -2,48 +2,108 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { InquiryForm } from "@/components/forms/InquiryForm";
+import { sanityClient, isSanityConfigured } from "@/lib/sanity/client";
+import { contactPageQuery } from "@/lib/sanity/queries";
+import type { ContactPage } from "@/lib/sanity/types";
 
-export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Get in touch with Mediterana Yachting to start planning your luxury Mediterranean yacht charter.",
+export const revalidate = 3600;
+
+// Fallback data
+const fallbackData: ContactPage = {
+  heroTitle: "Get in Touch",
+  heroSubtitle: "Ready to start planning your Mediterranean adventure? We'd love to hear from you.",
+  heroImage: { url: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80", alt: "Mediterranean marina" },
+  contactTitle: "Contact Information",
+  contactDescription: "Reach out directly or fill in the form and we'll get back to you within 24 hours.",
+  email: "hello@mediteranayachting.com",
+  phone: "+30 123 456 789",
+  whatsapp: "+30123456789",
+  location: "Athens, Greece",
+  officeHours: [
+    { days: "Monday - Friday", hours: "9:00 AM - 7:00 PM" },
+    { days: "Saturday", hours: "10:00 AM - 4:00 PM" },
+    { days: "Sunday", hours: "Closed" },
+  ],
+  timezone: "All times are in Eastern European Time (EET/EEST)",
+  formTitle: "Send us a message",
+  formDescription: "Tell us about your dream charter and we'll create a personalized proposal.",
+  faqTitle: "Frequently Asked Questions",
+  faqDescription: "New to yacht chartering? Check out our FAQ for answers to common questions about the process, costs, and what to expect.",
+  faqs: [
+    { question: "When should I book?", answer: "For peak season (July-August), we recommend booking 6-12 months in advance. Shoulder seasons offer more flexibility." },
+    { question: "What's included in the price?", answer: "Typically the yacht, crew, insurance, and standard equipment. Food, fuel, and docking fees are usually extra." },
+    { question: "Do I need sailing experience?", answer: "Not at all! Our crewed charters include professional captains and crew who handle everything." },
+  ],
+  seoTitle: "Contact Us",
+  seoDescription: "Get in touch with Mediterana Yachting to start planning your luxury Mediterranean yacht charter.",
 };
 
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "hello@mediteranayachting.com",
-    href: "mailto:hello@mediteranayachting.com",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+30 123 456 789",
-    href: "tel:+30123456789",
-  },
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    value: "Chat with us",
-    href: "https://wa.me/30123456789",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "Athens, Greece",
-    href: null,
-  },
-];
+async function getContactPageData(): Promise<ContactPage> {
+  if (!isSanityConfigured || !sanityClient) {
+    return fallbackData;
+  }
 
-export default function ContactPage() {
+  try {
+    const data = await sanityClient.fetch<ContactPage>(contactPageQuery);
+    return data || fallbackData;
+  } catch (error) {
+    console.error("Error fetching contact page:", error);
+    return fallbackData;
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await getContactPageData();
+  return {
+    title: data.seoTitle || "Contact Us",
+    description: data.seoDescription || fallbackData.seoDescription,
+  };
+}
+
+export default async function ContactPage() {
+  const data = await getContactPageData();
+  const officeHours = data.officeHours || fallbackData.officeHours || [];
+  const faqs = data.faqs || fallbackData.faqs || [];
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: data.email || fallbackData.email,
+      href: `mailto:${data.email || fallbackData.email}`,
+    },
+    {
+      icon: Phone,
+      label: "Phone",
+      value: data.phone || fallbackData.phone,
+      href: `tel:${(data.phone || fallbackData.phone || "").replace(/\s/g, "")}`,
+    },
+    ...(data.whatsapp || fallbackData.whatsapp
+      ? [
+          {
+            icon: MessageCircle,
+            label: "WhatsApp",
+            value: "Chat with us",
+            href: `https://wa.me/${(data.whatsapp || fallbackData.whatsapp || "").replace(/[^0-9]/g, "")}`,
+          },
+        ]
+      : []),
+    {
+      icon: MapPin,
+      label: "Location",
+      value: data.location || fallbackData.location,
+      href: null as string | null,
+    },
+  ];
+
   return (
     <>
       {/* Hero */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-24">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80"
-            alt="Mediterranean marina"
+            src={data.heroImage?.url || fallbackData.heroImage?.url || ""}
+            alt={data.heroImage?.alt || "Contact hero"}
             fill
             className="object-cover"
             priority
@@ -52,9 +112,9 @@ export default function ContactPage() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10 text-white text-center">
-          <h1 className="text-shadow">Get in Touch</h1>
+          <h1 className="text-shadow">{data.heroTitle || fallbackData.heroTitle}</h1>
           <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-            Ready to start planning your Mediterranean adventure? We&apos;d love to hear from you.
+            {data.heroSubtitle || fallbackData.heroSubtitle}
           </p>
         </div>
       </section>
@@ -65,9 +125,9 @@ export default function ContactPage() {
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Contact Info */}
             <div className="lg:col-span-1">
-              <h2 className="text-2xl md:text-3xl">Contact Information</h2>
+              <h2 className="text-2xl md:text-3xl">{data.contactTitle || fallbackData.contactTitle}</h2>
               <p className="mt-4 text-text-secondary">
-                Reach out directly or fill in the form and we&apos;ll get back to you within 24 hours.
+                {data.contactDescription || fallbackData.contactDescription}
               </p>
 
               <div className="mt-8 space-y-6">
@@ -99,21 +159,15 @@ export default function ContactPage() {
               <div className="mt-10 p-6 bg-bg-muted rounded-lg">
                 <h3 className="font-medium text-text-primary">Office Hours</h3>
                 <div className="mt-3 space-y-2 text-sm text-text-secondary">
-                  <div className="flex justify-between">
-                    <span>Monday - Friday</span>
-                    <span>9:00 AM - 7:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Saturday</span>
-                    <span>10:00 AM - 4:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sunday</span>
-                    <span>Closed</span>
-                  </div>
+                  {officeHours.map((item, index) => (
+                    <div key={index} className="flex justify-between">
+                      <span>{item.days}</span>
+                      <span>{item.hours}</span>
+                    </div>
+                  ))}
                 </div>
                 <p className="mt-4 text-xs text-text-muted">
-                  All times are in Eastern European Time (EET/EEST)
+                  {data.timezone || fallbackData.timezone}
                 </p>
               </div>
             </div>
@@ -121,9 +175,9 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="bg-bg-surface p-8 md:p-10 rounded-lg shadow-soft">
-                <h2 className="text-2xl md:text-3xl mb-2">Send us a message</h2>
+                <h2 className="text-2xl md:text-3xl mb-2">{data.formTitle || fallbackData.formTitle}</h2>
                 <p className="text-text-secondary mb-8">
-                  Tell us about your dream charter and we&apos;ll create a personalized proposal.
+                  {data.formDescription || fallbackData.formDescription}
                 </p>
 
                 <InquiryForm />
@@ -136,28 +190,15 @@ export default function ContactPage() {
       {/* FAQ Teaser */}
       <section className="py-16 bg-bg-surface">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl">Frequently Asked Questions</h2>
+          <h2 className="text-2xl md:text-3xl">{data.faqTitle || fallbackData.faqTitle}</h2>
           <p className="mt-4 text-text-secondary max-w-2xl mx-auto">
-            New to yacht chartering? Check out our FAQ for answers to common questions about the process, costs, and what to expect.
+            {data.faqDescription || fallbackData.faqDescription}
           </p>
           <div className="mt-8 grid md:grid-cols-3 gap-6 text-left max-w-4xl mx-auto">
-            {[
-              {
-                q: "When should I book?",
-                a: "For peak season (July-August), we recommend booking 6-12 months in advance. Shoulder seasons offer more flexibility.",
-              },
-              {
-                q: "What's included in the price?",
-                a: "Typically the yacht, crew, insurance, and standard equipment. Food, fuel, and docking fees are usually extra.",
-              },
-              {
-                q: "Do I need sailing experience?",
-                a: "Not at all! Our crewed charters include professional captains and crew who handle everything.",
-              },
-            ].map((faq) => (
-              <div key={faq.q} className="bg-bg-base p-6 rounded-lg">
-                <h3 className="font-medium text-text-primary">{faq.q}</h3>
-                <p className="mt-2 text-text-secondary text-sm">{faq.a}</p>
+            {faqs.slice(0, 3).map((faq, index) => (
+              <div key={index} className="bg-bg-base p-6 rounded-lg">
+                <h3 className="font-medium text-text-primary">{faq.question}</h3>
+                <p className="mt-2 text-text-secondary text-sm">{faq.answer}</p>
               </div>
             ))}
           </div>
