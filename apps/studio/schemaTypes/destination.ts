@@ -57,6 +57,13 @@ export default defineType({
       title: "Suggested Itinerary",
       type: "blockContent",
     }),
+    defineField({
+      name: "recommendedYachts",
+      title: "Recommended Yachts",
+      description: "Yachts recommended for this destination",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "yacht" }] }],
+    }),
   ],
   preview: {
     select: {

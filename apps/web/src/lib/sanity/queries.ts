@@ -88,7 +88,7 @@ export const destinationBySlugQuery = groq`
     highlights,
     description,
     itinerary,
-    "featuredYachts": *[_type == "yacht" && references(^._id)] {
+    "featuredYachts": recommendedYachts[]-> {
       _id,
       name,
       slug,
