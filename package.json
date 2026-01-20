@@ -1,0 +1,19 @@
+{
+  "name": "mediterana-yachting",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "dev:studio": "pnpm --filter studio dev",
+    "build": "pnpm --filter web build",
+    "build:studio": "pnpm --filter studio build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint",
+    "test": "pnpm --filter web test",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "sanity:import": "cd apps/studio && npx sanity dataset import ../../data/import.ndjson production --replace"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

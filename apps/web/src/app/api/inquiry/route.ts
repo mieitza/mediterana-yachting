@@ -1,0 +1,177 @@
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+interface InquiryData {
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+  interestType: "yacht" | "destination" | "general";
+  yachtSlug?: string;
+  yachtName?: string;
+  destinationSlug?: string;
+  destinationName?: string;
+  dates?: string;
+  turnstileToken: string;
+}
+
+async function verifyTurnstile(token: string): Promise<boolean> {
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+
+  if (!secretKey) {
+    console.warn("Turnstile secret key not configured, skipping verification");
+    return true;
+  }
+
+  try {
+    const response = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          secret: secretKey,
+          response: token,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error("Turnstile verification error:", error);
+    return false;
+  }
+}
+
+function getSubjectLine(data: InquiryData): string {
+  if (data.yachtName) {
+    return `Charter Inquiry: ${data.yachtName}`;
+  }
+  if (data.destinationName) {
+    return `Destination Inquiry: ${data.destinationName}`;
+  }
+  return "New Charter Inquiry";
+}
+
+function formatEmailBody(data: InquiryData): string {
+  let body = `
+New inquiry from Mediterana Yachting website
+
+---
+
+Name: ${data.name}
+Email: ${data.email}
+${data.phone ? `Phone: ${data.phone}` : ""}
+Interest: ${data.interestType === "yacht" ? "Chartering a Yacht" : data.interestType === "destination" ? "Exploring a Destination" : "General Inquiry"}
+${data.yachtName ? `Yacht: ${data.yachtName}` : ""}
+${data.destinationName ? `Destination: ${data.destinationName}` : ""}
+${data.dates ? `Preferred Dates: ${data.dates}` : ""}
+
+Message:
+${data.message}
+
+---
+
+Reply directly to this email to respond to the customer.
+`;
+
+  return body.trim();
+}
+
+function formatConfirmationEmail(data: InquiryData): string {
+  return `
+Dear ${data.name},
+
+Thank you for your inquiry. We have received your message and a member of our team will be in touch within 24 hours.
+
+${data.yachtName ? `You expressed interest in: ${data.yachtName}` : ""}
+${data.destinationName ? `You're interested in exploring: ${data.destinationName}` : ""}
+
+In the meantime, feel free to browse our fleet at https://www.mediteranayachting.com/yachts or explore our destinations at https://www.mediteranayachting.com/destinations.
+
+Best regards,
+The Mediterana Yachting Team
+
+---
+Mediterana Yachting
+hello@mediteranayachting.com
++30 123 456 789
+`.trim();
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const data: InquiryData = await request.json();
+
+    // Validate required fields
+    if (!data.name || !data.email || !data.message || !data.interestType) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
+        { status: 400 }
+      );
+    }
+
+    // Verify Turnstile token
+    const isValid = await verifyTurnstile(data.turnstileToken);
+    if (!isValid) {
+      return NextResponse.json(
+        { error: "Security verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
+
+    const contactEmail = process.env.CONTACT_EMAIL || "hello@mediteranayachting.com";
+
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.log("Resend not configured, logging inquiry:");
+      console.log(data);
+      return NextResponse.json({
+        success: true,
+        message: "Inquiry received (email not configured)",
+      });
+    }
+
+    // Send notification email to business
+    await resend.emails.send({
+      from: "Mediterana Yachting <noreply@mediteranayachting.com>",
+      to: contactEmail,
+      replyTo: data.email,
+      subject: getSubjectLine(data),
+      text: formatEmailBody(data),
+    });
+
+    // Send confirmation email to customer
+    await resend.emails.send({
+      from: "Mediterana Yachting <noreply@mediteranayachting.com>",
+      to: data.email,
+      subject: "Thank you for your inquiry - Mediterana Yachting",
+      text: formatConfirmationEmail(data),
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Inquiry sent successfully",
+    });
+  } catch (error) {
+    console.error("Inquiry submission error:", error);
+    return NextResponse.json(
+      { error: "Failed to process inquiry. Please try again." },
+      { status: 500 }
+    );
+  }
+}

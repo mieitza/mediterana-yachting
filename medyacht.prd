@@ -1,0 +1,304 @@
+1) Rezumat produs
+
+Scop
+
+Site premium pentru charter/brokerage “boutique” în Mediterană, cu:
+	•	prezentare brand (Home + About),
+	•	listă ~20 yacht-uri (grid + pagină dedicată fiecăruia),
+	•	~5 destinații (carusel + pagini dedicate),
+	•	blog (SEO + authority),
+	•	contact + “inquiry funnels” (CTA-uri pe fiecare pagină relevantă).
+
+KPI-uri (MVP → v1)
+	•	Lead-uri calificate / lună (form submissions) + rata de conversie CTA.
+	•	Lighthouse: Performance 90+, Accessibility 95+, SEO 95+.
+	•	Timp mediu până la “Inquiry sent” < 60 sec (de pe pagină yacht).
+	•	Indexare SEO: pagini Yacht + Destinații + Blog.
+
+Referințe de concept (ce “copiem” ca feeling)
+	•	“Charter / Destinations / Yachts” ca navigație + CTA “Contact / Enquire” constant (Edmiston / C&N).  ￼
+	•	Storytelling “Where to go / Choose your yacht” (Fraser).  ￼
+	•	“Charter types / process” ca secțiuni explicative (HELM) — util în About / Home pentru claritate.  ￼
+	•	Taxonomie destinații (Luxury Charter Group) — utilă pentru structurarea celor 5 zone și extensie ulterioară.  ￼
+	•	Ton “5 star service / Greece & beyond” (Istion) — bun pentru microcopy, fără să pari “corporate”.  ￼
+
+⸻
+
+2) Informație & pagini (IA)
+
+Pagini (6) + subpagini
+	1.	Home
+	2.	About
+	3.	Yachts
+	•	/yachts (grid ~20)
+	•	/yachts/[slug] (pagină yacht)
+	4.	Destinații
+	•	/destinations (carusel + cards)
+	•	/destinations/[slug] (5 zone)
+	5.	Blog
+	•	/blog (list)
+	•	/blog/[slug] (articol)
+	6.	Contact
+	•		•	componentă reutilizabilă “Inquiry CTA” pe site (Home, Yachts, Destinații, Blog)
+
+User journeys (critice)
+	•	Home → Yachts → Yacht detail → “Request availability / Enquire” (lead)
+	•	Home → Destinații → Destinație detail → “Plan your itinerary” (lead)
+	•	Blog → articol → CTA “Talk to a broker” (lead)
+
+⸻
+
+3) Functionalități pe pagini (cerințe & acceptance)
+
+3.1 Home (MVP)
+
+Secțiuni recomandate:
+	1.	Hero full-bleed (video opțional) + headline + CTA primar (“Enquire”) + CTA secundar (“View yachts”)
+	2.	“Featured Yachts” (4–6 cards)
+	3.	“Destinations” (5 cards/carousel)
+	4.	“Why Mediterana” (3–5 bullets + trust signals)
+	5.	“The Process” (3 pași: Discover → Match → Charter) inspirat din abordările tip “guide/process”.  ￼
+	6.	Latest blog posts (3)
+	7.	Footer lux (newsletter optional)
+
+Acceptance:
+	•	CTA sticky în header (desktop) + buton simplu pe mobil
+	•	Hero optimizat (LCP < 2.5s pe 4G)
+	•	Toate secțiunile editabile din CMS
+
+3.2 About
+	•	Poveste (brand positioning)
+	•	“What we do” (Charter / Corporate / Day trips / Events – dacă vrei)
+	•	“How we work” (proces)
+	•	Trust: experiență, parteneri, disclaimers
+
+Acceptance: conținut 100% CMS, imagini optimizate.
+
+3.3 Yachts (grid /yachts)
+
+MVP:
+	•	Grid cards cu: imagine principală, nume, tip (motor/sailing/catamaran), lungime, guests, cabin, “From €” (dacă există), CTA “View”.
+	•	Filtre simple (client-side): Type, Guests, Length range (optional).
+	•	Sort: Featured, Length, Guests.
+
+Acceptance:
+	•	20 yacht-uri randate rapid (SSG/ISR)
+	•	Filtre fără refresh pagină
+	•	URL query params pt filtre (shareable): ?type=catamaran&guests=8
+
+3.4 Yacht detail /yachts/[slug]
+
+Layout recomandat (lux editorial):
+	•	Hero gallery (carousel) + quick facts
+	•	Descriere editorială
+	•	Specs table (structured)
+	•	“Highlights” (3–6)
+	•	“Onboard Experience” (text + 2 imagini)
+	•	Video placeholder (YouTube/Vimeo embed)
+	•	CTA final: “Request availability / Get a quote” (form scurt)
+
+Acceptance:
+	•	Galerie performantă (lazy + blur placeholders)
+	•	Form precompletat cu yachtName
+	•	SEO: title/description, OG image, JSON-LD (Product/Service)
+
+3.5 Destinații (/destinations + /destinations/[slug])
+	•	Pagina listă: 5 zone cu imagery mare + best season + 3 highlights
+	•	Pagină destinație:
+	•	Hero
+	•	“Why go” + “Best time to visit”
+	•	Suggested itinerary (3–7 zile)
+	•	Featured yachts for this destination (manual curated)
+	•	CTA: “Plan your charter”
+
+Acceptance: posibilitate de a lega yachts ↔ destinations în CMS.
+
+3.6 Blog
+	•	/blog: list + categories/tags + search (optional)
+	•	/blog/[slug]: articol + table of contents (auto) + CTA
+
+Acceptance: draft/preview, SEO bun, imagini optimizate.
+
+3.7 Contact
+	•	Form: nume, email, telefon (optional), mesaj, interes (Yacht/Destination/General), date (optional)
+	•	Map embed (optional)
+	•	Contact details + WhatsApp link
+
+Acceptance: anti-spam (hCaptcha/Turnstile), email delivery + notificare.
+
+⸻
+
+4) Content model (CMS)
+
+Recomand Sanity CMS (rapid, schemă în cod, preview bun) + Next.js ISR.
+
+Tipuri (documente)
+	•	siteSettings: logo, social, SEO default, featured yacht IDs
+	•	page: Home/About/Contact (sections)
+	•	yacht:
+	•	name, slug, featured (bool)
+	•	heroMedia: [images], videoUrl
+	•	summary, description (rich text)
+	•	specs: length, beam, draft, year, guests, cabins, crew, cruisingSpeed
+	•	pricing: fromPrice (optional), currency, priceNote
+	•	destinations: [ref destination]
+	•	destination:
+	•	name, slug, heroImage
+	•	bestSeason, highlights, itinerary (rich)
+	•	gallery
+	•	post:
+	•	title, slug, excerpt, body, coverImage, tags, publishedAt, author
+
+⸻
+
+5) Design system (stil “premium minimal”)
+
+Direcție vizuală
+	•	Imagery-first: fotografii mari, mult spațiu alb/negativ, text puțin dar puternic.
+	•	Tipografie editorială (serif pentru headings) + sans modern pentru UI.
+
+Token-uri (propunere)
+	•	Culori:
+	•	Ink (aproape negru) pentru text
+	•	Ivory / Off-white pentru fundal
+	•	Deep Navy ca accent (link/CTA)
+	•	Warm Sand ca highlight subtil (badge/section)
+	•	Font pairing:
+	•	Headings: “Canela / Playfair Display / Cormorant” (alegi una)
+	•	Body/UI: “Inter / Neue Haas Grotesk fallback”
+	•	Grid & spacing:
+	•	container max 1200–1280px
+	•	spacing scale 4/8/12/16/24/32/48/64
+	•	Motion:
+	•	fade/slide subtil, fără “wow effects”
+	•	hover: zoom ușor pe imagini + underline animat
+
+Componente cheie
+	•	Header (transparent peste hero → devine solid la scroll)
+	•	Mega menu simplu (nu încărca)
+	•	YachtCard, DestinationCard, BlogCard
+	•	GalleryCarousel (touch friendly)
+	•	CTASection reutilizabil (“Plan your charter”)
+	•	Form (validare + anti-spam)
+	•	Footer editorial (sitemap, social, newsletter)
+
+⸻
+
+6) Tech stack (recomandat pentru execuție rapidă)
+
+Frontend
+	•	Next.js (App Router) + TypeScript
+	•	Styling: TailwindCSS + shadcn/ui (componente curate, ușor de adaptat “lux”)
+	•	Animations: Framer Motion (doar unde ajută)
+	•	Images: next/image + responsive sizing
+	•	SEO: next/metadata, OG images generate (opțional)
+
+CMS & conținut
+	•	Sanity (hosted) + @sanity/next preview
+	•	Media: Sanity assets (CDN) + reguli de crop
+
+Forms / lead handling
+	•	API route /api/inquiry
+	•	Email provider: Resend (sau SendGrid)
+	•	Stocare lead-uri:
+	•	MVP: trimis pe email + opțional Google Sheets via webhook
+	•	v1: HubSpot / Pipedrive integration
+
+Analytics & tracking
+	•	Plausible (simplu, privacy) sau GA4
+	•	Event tracking: cta_click, inquiry_submit, yacht_view
+
+Quality
+	•	ESLint + Prettier
+	•	Playwright (smoke tests: nav + form)
+	•	Lighthouse CI (optional)
+
+⸻
+
+7) Arhitectură (simplă, scalabilă)
+
+Next.js:
+	•	Pages statice + ISR pentru /yachts, /destinations, /blog
+	•	Dynamic routes: [slug] cu generateStaticParams + revalidate
+	•	Caching: Next + Vercel Edge cache
+	•	Search/filters: client-side pe dataset mic (~20); server-side dacă crește.
+
+Data flow:
+Sanity → Next.js (GROQ queries) → render (SSG/ISR) → user → inquiry API → email/CRM.
+
+⸻
+
+8) Hosting & DevOps
+
+Hosting recomandat (cel mai “smooth”)
+	•	Vercel pentru Next.js
+	•	Sanity managed pentru CMS
+	•	Domain: mediteranayachting.com în Vercel (DNS)
+	•	Email: Resend (SPF/DKIM configurat pe domeniu)
+
+Environments
+	•	development (local)
+	•	preview (per PR)
+	•	production (main)
+
+Observability
+	•	Vercel Analytics (optional)
+	•	Sentry (optional) pentru errors
+
+⸻
+
+9) Repo structure (pentru Claude Code / Codez)
+mediterana-yachting/
+  apps/web/                 # Next.js
+    app/
+      (marketing)/
+        page.tsx            # Home
+        about/page.tsx
+        yachts/page.tsx
+        yachts/[slug]/page.tsx
+        destinations/page.tsx
+        destinations/[slug]/page.tsx
+        blog/page.tsx
+        blog/[slug]/page.tsx
+        contact/page.tsx
+      api/inquiry/route.ts
+    components/
+      layout/ Header.tsx Footer.tsx
+      ui/ (shadcn)
+      yachts/ YachtCard.tsx YachtGallery.tsx YachtSpecs.tsx
+      destinations/ DestinationCard.tsx
+      blog/ PostCard.tsx
+      forms/ InquiryForm.tsx
+    lib/
+      sanity/ client.ts queries.ts types.ts
+      seo/ metadata.ts
+    styles/
+    public/
+  apps/studio/              # Sanity Studio (optional)
+  packages/config/          # lint/tsconfig
+
+10) Backlog (MVP → v1)
+
+MVP (2–4 sprint-uri)
+	•	Setup Next.js + Tailwind + shadcn
+	•	Sanity schemas + seed content (20 yachts, 5 destinations, 6–10 blog posts)
+	•	Implement pagini 6 + dynamic slugs
+	•	Inquiry form + email delivery + anti-spam
+	•	Basic SEO + OG
+	•	Performance pass (images/video)
+
+v1 (upgrade)
+	•	Multi-language (RO/EN) dacă vrei piață internațională
+	•	“Availability request” mai complex (date picker, număr persoane)
+	•	CRM integration + pipeline
+	•	Advanced filters + search
+	•	Editorial landing pages (e.g., “Croatia charters”, “Greek islands”)
+
+⸻
+
+11) Copy / microcopy (ton “lux, calm, direct”)
+	•	CTA primar: Enquire / Request Availability
+	•	CTA secundar: View Yachts, Explore Destinations
+	•	Secțiune proces: “We match you with the right yacht, crew and itinerary — discreetly, precisely.”
+
+

@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* From tokens.json - converted to HSL for shadcn/ui compatibility */
+    --background: 36 26% 95%; /* #F7F4EF */
+    --foreground: 214 20% 8%; /* #101317 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 214 20% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 20% 8%;
+
+    --primary: 209 63% 10%; /* #0A1B2A navy */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 38 35% 66%; /* #C9B48C sand */
+    --secondary-foreground: 214 20% 8%;
+
+    --muted: 36 21% 91%; /* #EFEAE2 */
+    --muted-foreground: 214 12% 42%; /* #4A5563 */
+
+    --accent: 38 35% 66%;
+    --accent-foreground: 214 20% 8%;
+
+    --destructive: 4 76% 40%; /* #B42318 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 209 63% 10%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg-base text-text-primary font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium tracking-tight text-text-primary;
+  }
+
+  h1 {
+    @apply text-display-xl;
+  }
+
+  h2 {
+    @apply text-display-lg;
+  }
+
+  h3 {
+    @apply text-display-md;
+  }
+
+  p {
+    @apply leading-relaxed text-text-secondary;
+  }
+
+  a {
+    @apply transition-colors duration-base;
+  }
+
+  img {
+    @apply max-w-full h-auto;
+  }
+
+  ::selection {
+    @apply bg-navy text-white;
+  }
+}
+
+@layer components {
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .link-underline {
+    @apply relative inline-block;
+  }
+
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-slow;
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  .prose-luxury {
+    @apply text-text-secondary leading-relaxed;
+  }
+
+  .prose-luxury p {
+    @apply mb-4;
+  }
+
+  .prose-luxury h2 {
+    @apply text-2xl md:text-3xl font-serif mt-12 mb-6 text-text-primary;
+  }
+
+  .prose-luxury h3 {
+    @apply text-xl md:text-2xl font-serif mt-8 mb-4 text-text-primary;
+  }
+
+  .prose-luxury ul, .prose-luxury ol {
+    @apply ml-6 mb-4 space-y-2;
+  }
+
+  .prose-luxury ul {
+    @apply list-disc;
+  }
+
+  .prose-luxury ol {
+    @apply list-decimal;
+  }
+
+  .prose-luxury blockquote {
+    @apply pl-6 border-l-2 border-navy italic my-6;
+  }
+
+  .prose-luxury a {
+    @apply text-navy hover:text-navy/80 underline underline-offset-4;
+  }
+
+  .image-zoom {
+    @apply transition-transform duration-slow ease-standard;
+  }
+
+  .image-zoom:hover {
+    @apply scale-105;
+  }
+
+  .card-hover {
+    @apply transition-all duration-base ease-standard;
+  }
+
+  .card-hover:hover {
+    @apply shadow-lift -translate-y-1;
+  }
+}
+
+@layer utilities {
+  .gradient-fade-b {
+    background: linear-gradient(to bottom, transparent, rgba(10, 27, 42, 0.7));
+  }
+
+  .gradient-fade-t {
+    background: linear-gradient(to top, transparent, rgba(10, 27, 42, 0.4));
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .animate-in {
+    animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
