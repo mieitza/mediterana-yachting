@@ -1,7 +1,7 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
-import { schemaTypes } from "./schemas";
+import { schemaTypes } from "./schemaTypes";
 
 export default defineConfig({
   name: "mediterana-yachting",
@@ -16,6 +16,7 @@ export default defineConfig({
         S.list()
           .title("Content")
           .items([
+            // Singleton pages
             S.listItem()
               .title("Site Settings")
               .child(
@@ -23,12 +24,35 @@ export default defineConfig({
                   .schemaType("siteSettings")
                   .documentId("siteSettings")
               ),
+            S.listItem()
+              .title("Home Page")
+              .child(
+                S.document()
+                  .schemaType("homePage")
+                  .documentId("homePage")
+              ),
+            S.listItem()
+              .title("About Page")
+              .child(
+                S.document()
+                  .schemaType("aboutPage")
+                  .documentId("aboutPage")
+              ),
+            S.listItem()
+              .title("Contact Page")
+              .child(
+                S.document()
+                  .schemaType("contactPage")
+                  .documentId("contactPage")
+              ),
             S.divider(),
+            // Collections
             S.documentTypeListItem("yacht").title("Yachts"),
             S.documentTypeListItem("destination").title("Destinations"),
             S.documentTypeListItem("post").title("Blog Posts"),
+            S.documentTypeListItem("teamMember").title("Team Members"),
             S.divider(),
-            S.documentTypeListItem("page").title("Pages"),
+            S.documentTypeListItem("page").title("Custom Pages"),
           ]),
     }),
     visionTool(),
