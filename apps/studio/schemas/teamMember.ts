@@ -52,16 +52,6 @@ export default defineType({
     select: {
       title: "name",
       subtitle: "role",
-      media: "image",
-    },
-    prepare({ title, subtitle, media }) {
-      return {
-        title,
-        subtitle,
-        media: media?.url ? (
-          <img src={media.url} alt={title} style={{ objectFit: "cover" }} />
-        ) : undefined,
-      };
     },
   },
   orderings: [
