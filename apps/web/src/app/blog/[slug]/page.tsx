@@ -11,7 +11,7 @@ import { sanityClient, isSanityConfigured } from "@/lib/sanity/client";
 import { postBySlugQuery, postSlugsQuery, latestPostsQuery } from "@/lib/sanity/queries";
 import type { Post } from "@/lib/sanity/types";
 
-export const revalidate = 3600;
+export const revalidate = 0; // Disable caching to always fetch fresh data
 
 // Fallback post
 const fallbackPost: Post = {

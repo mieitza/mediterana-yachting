@@ -13,7 +13,7 @@ import { sanityClient, isSanityConfigured } from "@/lib/sanity/client";
 import { yachtBySlugQuery, yachtSlugsQuery } from "@/lib/sanity/queries";
 import type { Yacht } from "@/lib/sanity/types";
 
-export const revalidate = 3600;
+export const revalidate = 0; // Disable caching to always fetch fresh data
 
 // Fallback yacht for demo
 const fallbackYacht: Yacht = {

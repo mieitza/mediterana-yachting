@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Insights, guides, and inspiration for your Mediterranean yacht charter adventure.",
 };
 
-export const revalidate = 3600;
+export const revalidate = 0; // Disable caching to always fetch fresh data
 
 // Fallback posts
 const fallbackPosts: Post[] = [

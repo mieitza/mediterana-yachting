@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Explore the most beautiful Mediterranean destinations for your luxury yacht charter.",
 };
 
-export const revalidate = 3600;
+export const revalidate = 0; // Disable caching to always fetch fresh data
 
 // Fallback destinations data
 const fallbackDestinations: Destination[] = [
