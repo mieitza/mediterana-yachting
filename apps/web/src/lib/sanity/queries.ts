@@ -10,6 +10,12 @@ export const siteSettingsQuery = groq`
     socialLinks,
     contactEmail,
     contactPhone,
+    contactAddress,
+    footerTagline,
+    footerCharterLinks,
+    footerCompanyLinks,
+    footerLegalLinks,
+    copyrightText,
     "featuredYachts": featuredYachts[]->{
       _id,
       name,

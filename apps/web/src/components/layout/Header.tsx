@@ -22,8 +22,9 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Check if we're on a page with a hero (needs transparent header)
-  const hasHero = pathname === "/" || pathname.startsWith("/yachts/") || pathname.startsWith("/destinations/");
+  // Check if we're on a page with a full-bleed hero (needs transparent header)
+  // Only homepage and destination detail pages have true full-bleed heroes
+  const hasHero = pathname === "/" || pathname.startsWith("/destinations/");
 
   useEffect(() => {
     const handleScroll = () => {
