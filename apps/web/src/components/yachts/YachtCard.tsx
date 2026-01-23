@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Users, Ruler, Anchor } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import type { Yacht } from "@/lib/sanity/types";
+import type { YachtData } from "@/lib/types";
 
 interface YachtCardProps {
-  yacht: Pick<Yacht, "name" | "slug" | "type" | "heroImage" | "summary" | "specs" | "pricing">;
+  yacht: Pick<YachtData, "name" | "slug" | "type" | "heroImage" | "summary" | "length" | "guests" | "cabins" | "fromPrice" | "currency">;
   className?: string;
 }
 
@@ -18,19 +18,21 @@ const typeLabels = {
 export function YachtCard({ yacht, className }: YachtCardProps) {
   return (
     <Link
-      href={`/yachts/${yacht.slug.current}`}
+      href={`/yachts/${yacht.slug}`}
       className={cn("group block", className)}
     >
       <article className="card-hover bg-bg-surface rounded-lg overflow-hidden">
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden">
-          <Image
-            src={yacht.heroImage.url}
-            alt={yacht.heroImage.alt || yacht.name}
-            fill
-            className="object-cover image-zoom"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
+          {yacht.heroImage?.url && (
+            <Image
+              src={yacht.heroImage.url}
+              alt={yacht.heroImage.alt || yacht.name}
+              fill
+              className="object-cover image-zoom"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          )}
           {/* Type Badge */}
           <div className="absolute top-4 left-4">
             <span className="bg-bg-surface/90 backdrop-blur-sm text-text-primary text-xs font-medium px-3 py-1.5 rounded-full">
@@ -49,25 +51,31 @@ export function YachtCard({ yacht, className }: YachtCardProps) {
 
           {/* Specs */}
           <div className="flex items-center gap-4 mt-3 text-text-muted text-sm">
-            <div className="flex items-center gap-1.5">
-              <Ruler className="h-4 w-4" />
-              <span>{yacht.specs.length}m</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Users className="h-4 w-4" />
-              <span>{yacht.specs.guests} guests</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Anchor className="h-4 w-4" />
-              <span>{yacht.specs.cabins} cabins</span>
-            </div>
+            {yacht.length && (
+              <div className="flex items-center gap-1.5">
+                <Ruler className="h-4 w-4" />
+                <span>{yacht.length}m</span>
+              </div>
+            )}
+            {yacht.guests && (
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4" />
+                <span>{yacht.guests} guests</span>
+              </div>
+            )}
+            {yacht.cabins && (
+              <div className="flex items-center gap-1.5">
+                <Anchor className="h-4 w-4" />
+                <span>{yacht.cabins} cabins</span>
+              </div>
+            )}
           </div>
 
           {/* Price */}
-          {yacht.pricing?.fromPrice && (
+          {yacht.fromPrice && (
             <p className="mt-4 text-navy font-medium">
-              From {yacht.pricing.currency === "EUR" ? "€" : "$"}
-              {yacht.pricing.fromPrice.toLocaleString()}
+              From {yacht.currency === "EUR" ? "€" : "$"}
+              {yacht.fromPrice.toLocaleString()}
               <span className="text-text-muted text-sm font-normal"> /week</span>
             </p>
           )}

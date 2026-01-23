@@ -125,8 +125,12 @@ export function InquiryForm({
     }
   }, []);
 
+  // Check if Turnstile is configured
+  const turnstileConfigured = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
   const onSubmit = async (data: InquiryFormData) => {
-    if (!turnstileToken) {
+    // Only require Turnstile token if it's configured
+    if (turnstileConfigured && !turnstileToken) {
       toast({
         title: "Verification required",
         description: "Please complete the security verification.",
@@ -297,8 +301,10 @@ export function InquiryForm({
         </div>
       </div>
 
-      {/* Turnstile */}
-      <div ref={turnstileRef} className="flex justify-center" />
+      {/* Turnstile - only show if configured */}
+      {turnstileConfigured && (
+        <div ref={turnstileRef} className="flex justify-center" />
+      )}
 
       {/* Submit */}
       <Button

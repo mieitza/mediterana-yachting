@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Instagram, Facebook, Linkedin, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
-import { sanityClient, isSanityConfigured } from "@/lib/sanity/client";
-import { siteSettingsQuery } from "@/lib/sanity/queries";
+import { getSiteSettings } from "@/lib/data";
 
 interface FooterLink {
   label: string;
@@ -9,24 +8,24 @@ interface FooterLink {
 }
 
 interface SocialLinks {
-  instagram?: string;
-  facebook?: string;
-  linkedin?: string;
-  twitter?: string;
-  youtube?: string;
-  whatsapp?: string;
+  instagram?: string | null;
+  facebook?: string | null;
+  linkedin?: string | null;
+  twitter?: string | null;
+  youtube?: string | null;
+  whatsapp?: string | null;
 }
 
 interface FooterData {
   siteName?: string;
-  footerTagline?: string;
+  footerTagline?: string | null;
   footerCharterLinks?: FooterLink[];
   footerCompanyLinks?: FooterLink[];
   footerLegalLinks?: FooterLink[];
-  copyrightText?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  contactAddress?: string;
+  copyrightText?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  contactAddress?: string | null;
   socialLinks?: SocialLinks;
 }
 
@@ -60,13 +59,32 @@ const fallbackData: FooterData = {
 };
 
 async function getFooterData(): Promise<FooterData> {
-  if (!isSanityConfigured || !sanityClient) {
-    return fallbackData;
-  }
-
   try {
-    const data = await sanityClient.fetch<FooterData>(siteSettingsQuery);
-    return data || fallbackData;
+    const settings = await getSiteSettings();
+
+    if (!settings) {
+      return fallbackData;
+    }
+
+    return {
+      siteName: settings.siteName || fallbackData.siteName,
+      footerTagline: settings.footerTagline || fallbackData.footerTagline,
+      footerCharterLinks: fallbackData.footerCharterLinks,
+      footerCompanyLinks: fallbackData.footerCompanyLinks,
+      footerLegalLinks: fallbackData.footerLegalLinks,
+      copyrightText: settings.copyrightText || fallbackData.copyrightText,
+      contactEmail: settings.contactEmail || fallbackData.contactEmail,
+      contactPhone: settings.contactPhone || fallbackData.contactPhone,
+      contactAddress: settings.contactAddress || fallbackData.contactAddress,
+      socialLinks: {
+        instagram: settings.instagram,
+        facebook: settings.facebook,
+        linkedin: settings.linkedin,
+        twitter: settings.twitter,
+        youtube: settings.youtube,
+        whatsapp: settings.whatsapp,
+      },
+    };
   } catch (error) {
     console.error("Error fetching footer data:", error);
     return fallbackData;
@@ -211,7 +229,15 @@ export async function Footer() {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-white/50 text-sm">
-              &copy; {currentYear} {data.copyrightText || fallbackData.copyrightText}. All rights reserved.
+              {(() => {
+                const text = data.copyrightText || fallbackData.copyrightText || "";
+                // If the text already contains © or "All rights reserved", use it as-is
+                if (text.includes("©") || text.toLowerCase().includes("all rights reserved")) {
+                  return text;
+                }
+                // Otherwise, wrap it with the standard format
+                return `© ${currentYear} ${text}. All rights reserved.`;
+              })()}
             </p>
             {legalLinks.length > 0 && (
               <div className="flex space-x-6">

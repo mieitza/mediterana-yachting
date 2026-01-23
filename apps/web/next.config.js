@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Externalize native modules for server-side bundling
+  experimental: {
+    serverComponentsExternalPackages: ['better-sqlite3'],
+  },
   images: {
     remotePatterns: [
       {

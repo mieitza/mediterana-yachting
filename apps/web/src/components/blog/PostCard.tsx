@@ -2,16 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Tag } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import type { Post } from "@/lib/sanity/types";
+import type { PostData } from "@/lib/types";
 
 interface PostCardProps {
-  post: Pick<Post, "title" | "slug" | "excerpt" | "coverImage" | "tags" | "publishedAt">;
+  post: Pick<PostData, "title" | "slug" | "excerpt" | "coverImage" | "tags" | "publishedAt">;
   variant?: "default" | "featured";
   className?: string;
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
+function formatDate(date: Date | string | null | undefined) {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -23,7 +25,7 @@ export function PostCard({ post, variant = "default", className }: PostCardProps
 
   return (
     <Link
-      href={`/blog/${post.slug.current}`}
+      href={`/blog/${post.slug}`}
       className={cn("group block", className)}
     >
       <article
@@ -39,13 +41,15 @@ export function PostCard({ post, variant = "default", className }: PostCardProps
             isFeatured ? "aspect-[16/9] md:aspect-auto md:w-1/2" : "aspect-[16/10]"
           )}
         >
-          <Image
-            src={post.coverImage.url}
-            alt={post.coverImage.alt || post.title}
-            fill
-            className="object-cover image-zoom"
-            sizes={isFeatured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-          />
+          {post.coverImage?.url && (
+            <Image
+              src={post.coverImage.url}
+              alt={post.coverImage.alt || post.title}
+              fill
+              className="object-cover image-zoom"
+              sizes={isFeatured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+            />
+          )}
         </div>
 
         {/* Content */}
@@ -56,12 +60,16 @@ export function PostCard({ post, variant = "default", className }: PostCardProps
           )}
         >
           {/* Meta */}
-          <div className="flex items-center gap-4 text-text-muted text-sm">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+          {post.publishedAt && (
+            <div className="flex items-center gap-4 text-text-muted text-sm">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" />
+                <time dateTime={post.publishedAt instanceof Date ? post.publishedAt.toISOString() : post.publishedAt}>
+                  {formatDate(post.publishedAt)}
+                </time>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Title */}
           <h3
@@ -74,14 +82,16 @@ export function PostCard({ post, variant = "default", className }: PostCardProps
           </h3>
 
           {/* Excerpt */}
-          <p
-            className={cn(
-              "mt-3 text-text-secondary",
-              isFeatured ? "line-clamp-3" : "line-clamp-2 text-sm"
-            )}
-          >
-            {post.excerpt}
-          </p>
+          {post.excerpt && (
+            <p
+              className={cn(
+                "mt-3 text-text-secondary",
+                isFeatured ? "line-clamp-3" : "line-clamp-2 text-sm"
+              )}
+            >
+              {post.excerpt}
+            </p>
+          )}
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (

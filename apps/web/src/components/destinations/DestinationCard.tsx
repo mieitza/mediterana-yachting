@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import type { Destination } from "@/lib/sanity/types";
+import type { DestinationData } from "@/lib/types";
 
 interface DestinationCardProps {
-  destination: Pick<Destination, "name" | "slug" | "heroImage" | "bestSeason" | "highlights">;
+  destination: Pick<DestinationData, "name" | "slug" | "heroImage" | "bestSeason" | "highlights">;
   variant?: "default" | "large";
   className?: string;
 }
@@ -19,7 +19,7 @@ export function DestinationCard({
 
   return (
     <Link
-      href={`/destinations/${destination.slug.current}`}
+      href={`/destinations/${destination.slug}`}
       className={cn("group block", className)}
     >
       <article
@@ -29,13 +29,15 @@ export function DestinationCard({
         )}
       >
         {/* Background Image */}
-        <Image
-          src={destination.heroImage.url}
-          alt={destination.heroImage.alt || destination.name}
-          fill
-          className="object-cover image-zoom"
-          sizes={isLarge ? "100vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-        />
+        {destination.heroImage?.url && (
+          <Image
+            src={destination.heroImage.url}
+            alt={destination.heroImage.alt || destination.name}
+            fill
+            className="object-cover image-zoom"
+            sizes={isLarge ? "100vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+          />
+        )}
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/30 to-transparent" />
@@ -52,10 +54,12 @@ export function DestinationCard({
           </h3>
 
           {/* Best Season */}
-          <div className="flex items-center gap-2 mt-3 text-white/80 text-sm">
-            <Calendar className="h-4 w-4" />
-            <span>{destination.bestSeason}</span>
-          </div>
+          {destination.bestSeason && (
+            <div className="flex items-center gap-2 mt-3 text-white/80 text-sm">
+              <Calendar className="h-4 w-4" />
+              <span>{destination.bestSeason}</span>
+            </div>
+          )}
 
           {/* Highlights */}
           {destination.highlights && destination.highlights.length > 0 && (

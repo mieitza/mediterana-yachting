@@ -6,10 +6,14 @@ import { ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { cn } from "@/lib/utils/cn";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import type { ExternalImage } from "@/lib/sanity/types";
+
+interface GalleryImage {
+  url: string;
+  alt?: string;
+}
 
 interface YachtGalleryProps {
-  images: ExternalImage[];
+  images: GalleryImage[];
   yachtName: string;
 }
 

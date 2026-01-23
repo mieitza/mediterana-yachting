@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { db, inquiries, yachts, destinations } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-initialize Resend only when API key is available
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+  return new Resend(apiKey);
+}
 
 interface InquiryData {
   name: string;
@@ -134,10 +142,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Look up yacht and destination IDs if provided
+    let yachtId: string | null = null;
+    let destinationId: string | null = null;
+
+    if (data.yachtSlug) {
+      const yacht = db.select({ id: yachts.id }).from(yachts).where(eq(yachts.slug, data.yachtSlug)).get();
+      if (yacht) yachtId = yacht.id;
+    }
+
+    if (data.destinationSlug) {
+      const destination = db.select({ id: destinations.id }).from(destinations).where(eq(destinations.slug, data.destinationSlug)).get();
+      if (destination) destinationId = destination.id;
+    }
+
+    // Save inquiry to database
+    db.insert(inquiries).values({
+      id: nanoid(),
+      name: data.name,
+      email: data.email,
+      phone: data.phone || null,
+      message: data.message,
+      yachtId,
+      destinationId,
+      source: data.interestType,
+      status: 'new',
+    }).run();
+
     const contactEmail = process.env.CONTACT_EMAIL || "hello@mediteranayachting.com";
 
     // Check if Resend is configured
-    if (!process.env.RESEND_API_KEY) {
+    const resend = getResendClient();
+    if (!resend) {
       console.log("Resend not configured, logging inquiry:");
       console.log(data);
       return NextResponse.json({
@@ -150,7 +186,7 @@ export async function POST(request: NextRequest) {
     await resend.emails.send({
       from: "Mediterana Yachting <noreply@mediteranayachting.com>",
       to: contactEmail,
-      replyTo: data.email,
+      reply_to: data.email,
       subject: getSubjectLine(data),
       text: formatEmailBody(data),
     });
