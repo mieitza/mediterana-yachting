@@ -31,7 +31,7 @@ interface FooterData {
 
 // Fallback data
 const fallbackData: FooterData = {
-  siteName: "Mediterana",
+  siteName: "Mediterana Yachting",
   footerTagline: "Experience the Mediterranean in unparalleled luxury. We match you with the right yacht, crew, and itinerary — discreetly, precisely.",
   footerCharterLinks: [
     { label: "Our Yachts", href: "/yachts" },

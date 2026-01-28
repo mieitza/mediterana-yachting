@@ -41,7 +41,7 @@ const defaultContent = {
   featuredYachtsSubtitle: "Explore our curated selection of exceptional vessels, each offering a unique way to experience the Mediterranean.",
   destinationsTitle: "Destinations",
   destinationsSubtitle: "From the azure waters of Greece to the glamorous ports of the French Riviera, discover your perfect Mediterranean escape.",
-  whyMediteranaTitle: "Why Mediterana",
+  whyMediteranaTitle: "Why Mediterana Yachting",
   whyMediteranaSubtitle: "We match you with the right yacht, crew, and itinerary — discreetly, precisely.",
   whyMediteranaFeatures: [
     { icon: "shield", title: "Trusted Expertise", description: "Over a decade of experience in luxury Mediterranean charters." },

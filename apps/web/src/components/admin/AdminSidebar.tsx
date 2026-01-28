@@ -99,7 +99,7 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2 px-6 py-5 border-b border-slate-700">
         <Anchor className="h-6 w-6 text-primary" />
-        <span className="text-lg font-semibold">Mediterana</span>
+        <span className="text-lg font-semibold">Mediterana Yachting</span>
       </div>
 
       {/* Navigation */}

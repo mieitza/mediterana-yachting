@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
           <div className="flex items-center justify-center gap-2 mb-8">
             <Anchor className="h-8 w-8 text-primary" />
             <span className="text-2xl font-semibold tracking-tight">
-              Mediterana
+              Mediterana Yachting
             </span>
           </div>
 

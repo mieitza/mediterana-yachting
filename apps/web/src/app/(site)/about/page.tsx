@@ -22,7 +22,7 @@ const iconMap: Record<string, any> = {
 
 // Default content
 const defaultContent = {
-  heroTitle: "About Mediterana",
+  heroTitle: "About Mediterana Yachting",
   heroSubtitle: "Your trusted partner for unforgettable Mediterranean yacht experiences.",
   heroImage: { url: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&q=80", alt: "Mediterranean coastline" },
   storyTitle: "Our Story",

@@ -65,7 +65,7 @@ export function Header() {
               textColor
             )}
           >
-            Mediterana
+            Mediterana Yachting
           </Link>
 
           {/* Desktop Navigation */}
