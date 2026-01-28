@@ -1,5 +1,6 @@
 import { db, posts } from '@/lib/db';
 import { eq, desc, lte, and } from 'drizzle-orm';
+import { resolveImage } from './utils';
 
 export interface BlogPost {
   id: string;
@@ -18,7 +19,7 @@ export interface BlogPost {
 function parsePost(post: typeof posts.$inferSelect): BlogPost {
   return {
     ...post,
-    coverImage: post.coverImage ? JSON.parse(post.coverImage) : null,
+    coverImage: resolveImage(post.coverImage ? JSON.parse(post.coverImage) : null),
     tags: post.tags ? JSON.parse(post.tags) : null,
   };
 }

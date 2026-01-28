@@ -1,5 +1,6 @@
 import { db, destinations, destinationRecommendedYachts, yachts } from '@/lib/db';
 import { eq } from 'drizzle-orm';
+import { resolveImage, resolveImages } from './utils';
 
 export interface DestinationWithYachts {
   id: string;
@@ -26,8 +27,8 @@ export interface DestinationWithYachts {
 function parseDestination(dest: typeof destinations.$inferSelect): Omit<DestinationWithYachts, 'recommendedYachts'> {
   return {
     ...dest,
-    heroImage: dest.heroImage ? JSON.parse(dest.heroImage) : null,
-    gallery: dest.gallery ? JSON.parse(dest.gallery) : null,
+    heroImage: resolveImage(dest.heroImage ? JSON.parse(dest.heroImage) : null),
+    gallery: resolveImages(dest.gallery ? JSON.parse(dest.gallery) : null),
     highlights: dest.highlights ? JSON.parse(dest.highlights) : null,
   };
 }
@@ -66,7 +67,7 @@ export async function getDestinationBySlug(slug: string): Promise<DestinationWit
     ...parseDestination(dest),
     recommendedYachts: recommended.map((yacht) => ({
       ...yacht,
-      heroImage: yacht.heroImage ? JSON.parse(yacht.heroImage) : null,
+      heroImage: resolveImage(yacht.heroImage ? JSON.parse(yacht.heroImage) : null),
     })),
   };
 }

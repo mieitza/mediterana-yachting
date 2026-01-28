@@ -1,5 +1,6 @@
 import { db, yachts, yachtDestinations, destinations } from '@/lib/db';
 import { eq, desc, and, inArray } from 'drizzle-orm';
+import { resolveImage, resolveImages } from './utils';
 
 export interface YachtWithDestinations {
   id: string;
@@ -33,8 +34,8 @@ export interface YachtWithDestinations {
 function parseYacht(yacht: typeof yachts.$inferSelect): Omit<YachtWithDestinations, 'destinations'> {
   return {
     ...yacht,
-    heroImage: yacht.heroImage ? JSON.parse(yacht.heroImage) : null,
-    gallery: yacht.gallery ? JSON.parse(yacht.gallery) : null,
+    heroImage: resolveImage(yacht.heroImage ? JSON.parse(yacht.heroImage) : null),
+    gallery: resolveImages(yacht.gallery ? JSON.parse(yacht.gallery) : null),
     highlights: yacht.highlights ? JSON.parse(yacht.highlights) : null,
   };
 }

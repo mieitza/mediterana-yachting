@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // Externalize native modules for server-side bundling
   experimental: {
     serverComponentsExternalPackages: ['better-sqlite3'],
@@ -17,6 +18,18 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.imgix.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'mediteranayachting.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.mediteranayachting.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
       },
     ],
   },

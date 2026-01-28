@@ -1,5 +1,6 @@
 import { db, homePage, aboutPage, contactPage, siteSettings, teamMembers } from '@/lib/db';
 import { asc } from 'drizzle-orm';
+import { resolveImage } from './utils';
 
 export interface SiteSettingsData {
   siteName: string;
@@ -30,7 +31,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData | null> {
   return {
     siteName: settings.siteName || 'Mediterana Yachting',
     siteDescription: settings.siteDescription,
-    logo: settings.logo ? JSON.parse(settings.logo) : null,
+    logo: resolveImage(settings.logo ? JSON.parse(settings.logo) : null),
     contactEmail: settings.contactEmail,
     contactPhone: settings.contactPhone,
     contactAddress: settings.contactAddress,
@@ -56,7 +57,7 @@ export async function getHomePage() {
 
   return {
     ...page,
-    heroImage: page.heroImage ? JSON.parse(page.heroImage) : null,
+    heroImage: resolveImage(page.heroImage ? JSON.parse(page.heroImage) : null),
     heroCtas: page.heroCtas ? JSON.parse(page.heroCtas) : null,
     whyMediteranaFeatures: page.whyMediteranaFeatures ? JSON.parse(page.whyMediteranaFeatures) : null,
     processSteps: page.processSteps ? JSON.parse(page.processSteps) : null,
@@ -70,8 +71,8 @@ export async function getAboutPage() {
 
   return {
     ...page,
-    heroImage: page.heroImage ? JSON.parse(page.heroImage) : null,
-    storyImage: page.storyImage ? JSON.parse(page.storyImage) : null,
+    heroImage: resolveImage(page.heroImage ? JSON.parse(page.heroImage) : null),
+    storyImage: resolveImage(page.storyImage ? JSON.parse(page.storyImage) : null),
     statistics: page.statistics ? JSON.parse(page.statistics) : null,
     values: page.values ? JSON.parse(page.values) : null,
     processSteps: page.processSteps ? JSON.parse(page.processSteps) : null,
@@ -85,7 +86,7 @@ export async function getContactPage() {
 
   return {
     ...page,
-    heroImage: page.heroImage ? JSON.parse(page.heroImage) : null,
+    heroImage: resolveImage(page.heroImage ? JSON.parse(page.heroImage) : null),
     officeHours: page.officeHours ? JSON.parse(page.officeHours) : null,
     faqItems: page.faqItems ? JSON.parse(page.faqItems) : null,
   };
@@ -100,6 +101,6 @@ export async function getTeamMembers() {
 
   return rows.map((member) => ({
     ...member,
-    image: member.image ? JSON.parse(member.image) : null,
+    image: resolveImage(member.image ? JSON.parse(member.image) : null),
   }));
 }
