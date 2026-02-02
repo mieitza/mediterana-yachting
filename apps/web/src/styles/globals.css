@@ -165,6 +165,60 @@
   }
 }
 
+/* Prose content - better paragraph spacing for rich text */
+.prose p {
+  margin-bottom: 1.25em;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Preserve empty paragraph spacing from rich text editor */
+.prose p:empty {
+  min-height: 1em;
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+/* Handle paragraphs with only whitespace or br */
+.prose p:has(br:only-child) {
+  min-height: 1em;
+}
+
+/* TipTap Editor Styles */
+.tiptap {
+  outline: none;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap h2 {
+  @apply text-xl font-semibold mt-4 mb-2;
+}
+
+.tiptap h3 {
+  @apply text-lg font-semibold mt-3 mb-2;
+}
+
+.tiptap ul {
+  @apply list-disc ml-6 my-2;
+}
+
+.tiptap ol {
+  @apply list-decimal ml-6 my-2;
+}
+
+.tiptap a {
+  @apply text-primary underline;
+}
+
 @layer utilities {
   .gradient-fade-b {
     background: linear-gradient(to bottom, transparent, rgba(10, 27, 42, 0.7));

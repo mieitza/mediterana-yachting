@@ -8,14 +8,10 @@ import { YachtGallery } from "@/components/yachts/YachtGallery";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { CTASection } from "@/components/CTASection";
-import { getYachtBySlug, getYachtSlugs } from "@/lib/data";
+import { getYachtBySlug } from "@/lib/data";
 
+export const dynamic = 'force-dynamic'; // Always render dynamically
 export const revalidate = 0; // Disable caching to always fetch fresh data
-
-export async function generateStaticParams() {
-  const slugs = await getYachtSlugs();
-  return slugs.map(({ slug }) => ({ slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -42,10 +38,11 @@ export async function generateMetadata({
   };
 }
 
-const typeLabels = {
+const typeLabels: Record<string, string> = {
   motor: "Motor Yacht",
   sailing: "Sailing Yacht",
-  catamaran: "Catamaran",
+  "power-catamaran": "Power Catamaran",
+  "sailing-catamaran": "Sailing Catamaran",
 };
 
 export default async function YachtPage({
@@ -122,15 +119,20 @@ export default async function YachtPage({
                   {typeLabels[yacht.type]}
                 </span>
                 <h1 className="mt-2">{yacht.name}</h1>
-                <p className="mt-4 text-lg text-text-secondary">{yacht.summary}</p>
+                {yacht.summary && (
+                  <div
+                    className="mt-4 text-lg text-text-secondary prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: yacht.summary }}
+                  />
+                )}
               </div>
 
               {/* Quick Specs */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-bg-surface rounded-lg mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-6 bg-bg-surface rounded-lg mb-8">
                 {yacht.length && (
                   <div className="text-center">
                     <Ruler className="h-5 w-5 mx-auto text-navy" />
-                    <p className="mt-1 font-medium">{yacht.length}m</p>
+                    <p className="mt-1 font-medium">{yacht.length}</p>
                     <p className="text-sm text-text-muted">Length</p>
                   </div>
                 )}
@@ -153,6 +155,13 @@ export default async function YachtPage({
                     <Calendar className="h-5 w-5 mx-auto text-navy" />
                     <p className="mt-1 font-medium">{yacht.year}</p>
                     <p className="text-sm text-text-muted">Built</p>
+                  </div>
+                )}
+                {yacht.yearRefitted && (
+                  <div className="text-center">
+                    <Calendar className="h-5 w-5 mx-auto text-navy" />
+                    <p className="mt-1 font-medium">{yacht.yearRefitted}</p>
+                    <p className="text-sm text-text-muted">Refitted</p>
                   </div>
                 )}
               </div>
@@ -189,7 +198,7 @@ export default async function YachtPage({
                       <span className="text-text-muted flex items-center gap-2">
                         <Ruler className="h-4 w-4" /> Length
                       </span>
-                      <span className="font-medium">{yacht.length}m</span>
+                      <span className="font-medium">{yacht.length}</span>
                     </div>
                   )}
                   {yacht.beam && (
@@ -197,7 +206,7 @@ export default async function YachtPage({
                       <span className="text-text-muted flex items-center gap-2">
                         <Ship className="h-4 w-4" /> Beam
                       </span>
-                      <span className="font-medium">{yacht.beam}m</span>
+                      <span className="font-medium">{yacht.beam}</span>
                     </div>
                   )}
                   {yacht.draft && (
@@ -205,7 +214,7 @@ export default async function YachtPage({
                       <span className="text-text-muted flex items-center gap-2">
                         <Waves className="h-4 w-4" /> Draft
                       </span>
-                      <span className="font-medium">{yacht.draft}m</span>
+                      <span className="font-medium">{yacht.draft}</span>
                     </div>
                   )}
                   {yacht.year && (
