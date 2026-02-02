@@ -187,17 +187,22 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {destinations.slice(0, 3).map((destination, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* First destination - large, spans 2 cols */}
+            {destinations[0] && (
+              <DestinationCard
+                key={destinations[0].id}
+                destination={destinations[0]}
+                variant="large"
+                className="md:col-span-2 md:row-span-2"
+              />
+            )}
+            {/* Remaining destinations - regular size */}
+            {destinations.slice(1, 4).map((destination) => (
               <DestinationCard
                 key={destination.id}
                 destination={destination}
-                variant={index === 0 ? "large" : "default"}
-                className={index === 0 ? "lg:col-span-2 lg:row-span-2" : ""}
               />
-            ))}
-            {destinations.slice(3, 5).map((destination) => (
-              <DestinationCard key={destination.id} destination={destination} />
             ))}
           </div>
 
