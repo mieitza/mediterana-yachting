@@ -7,7 +7,7 @@ export interface YachtWithDestinations {
   name: string;
   slug: string;
   featured: boolean | null;
-  type: 'motor' | 'sailing' | 'catamaran';
+  type: 'motor' | 'sailing' | 'power-catamaran' | 'sailing-catamaran';
   heroImage: { url: string; alt?: string } | null;
   gallery: { url: string; alt?: string }[] | null;
   videoUrl: string | null;
@@ -26,7 +26,7 @@ export interface YachtWithDestinations {
   fromPrice: number | null;
   currency: string | null;
   priceNote: string | null;
-  destinations: Array<{ id: string; name: string; slug: string }>;
+  destinations: Array<{ id: string; name: string; slug: string; heroImage: { url: string; alt?: string } | null }>;
   seoTitle: string | null;
   seoDescription: string | null;
 }
@@ -73,21 +73,30 @@ export async function getYachtBySlug(slug: string): Promise<YachtWithDestination
 
   if (!yacht) return null;
 
-  // Get destinations for this yacht
+  // Get destinations for this yacht with heroImage
   const yachtDests = db
     .select({
       id: destinations.id,
       name: destinations.name,
       slug: destinations.slug,
+      heroImage: destinations.heroImage,
     })
     .from(yachtDestinations)
     .innerJoin(destinations, eq(yachtDestinations.destinationId, destinations.id))
     .where(eq(yachtDestinations.yachtId, yacht.id))
     .all();
 
+  // Parse destination heroImage JSON
+  const parsedDestinations = yachtDests.map(dest => ({
+    id: dest.id,
+    name: dest.name,
+    slug: dest.slug,
+    heroImage: dest.heroImage ? resolveImage(JSON.parse(dest.heroImage)) : null,
+  }));
+
   return {
     ...parseYacht(yacht),
-    destinations: yachtDests,
+    destinations: parsedDestinations,
   };
 }
 

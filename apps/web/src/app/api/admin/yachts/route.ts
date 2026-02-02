@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { db, yachts } from '@/lib/db';
+import { db, yachts, yachtDestinations } from '@/lib/db';
 import { nanoid } from 'nanoid';
 
 export async function GET() {
@@ -60,7 +60,17 @@ export async function POST(request: Request) {
 
     db.insert(yachts).values(newYacht).run();
 
-    return NextResponse.json(newYacht, { status: 201 });
+    // Add destination links
+    const destinationIds = body.destinationIds || [];
+    for (const destinationId of destinationIds) {
+      db.insert(yachtDestinations).values({
+        id: nanoid(),
+        yachtId: newYacht.id,
+        destinationId,
+      }).run();
+    }
+
+    return NextResponse.json({ ...newYacht, destinationIds }, { status: 201 });
   } catch (error) {
     console.error('Error creating yacht:', error);
     return NextResponse.json({ error: 'Failed to create yacht' }, { status: 500 });

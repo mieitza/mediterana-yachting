@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,13 +16,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ImagePicker } from '@/components/admin/ImagePicker';
-import { Loader2, Save } from 'lucide-react';
+import { GalleryManager } from '@/components/admin/GalleryManager';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
+import { Loader2, Save, MapPin, X } from 'lucide-react';
 import type { Yacht } from '@/lib/db/schema';
+
+interface DestinationOption {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 const yachtSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
-  type: z.enum(['motor', 'sailing', 'catamaran']),
+  type: z.enum(['motor', 'sailing', 'power-catamaran', 'sailing-catamaran']),
   featured: z.boolean().default(false),
   videoUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   summary: z.string().optional(),
@@ -57,6 +65,53 @@ export function YachtForm({ yacht }: YachtFormProps) {
 
   const initialHeroImage = yacht?.heroImage ? JSON.parse(yacht.heroImage) : null;
   const [heroImage, setHeroImage] = useState<{ url: string; alt?: string } | null>(initialHeroImage);
+
+  const initialGallery = yacht?.gallery ? JSON.parse(yacht.gallery) : [];
+  const [gallery, setGallery] = useState<{ url: string; alt?: string }[]>(initialGallery);
+
+  const [summary, setSummary] = useState(yacht?.summary || '');
+  const [description, setDescription] = useState(yacht?.description || '');
+
+  // Destinations
+  const [allDestinations, setAllDestinations] = useState<DestinationOption[]>([]);
+  const [selectedDestinationIds, setSelectedDestinationIds] = useState<string[]>([]);
+  const [loadingDestinations, setLoadingDestinations] = useState(true);
+
+  // Fetch destinations and yacht's current destination links
+  useEffect(() => {
+    async function loadData() {
+      try {
+        // Fetch all destinations
+        const destRes = await fetch('/api/admin/destinations');
+        if (destRes.ok) {
+          const dests = await destRes.json();
+          setAllDestinations(dests);
+        }
+
+        // Fetch yacht's current destinations if editing
+        if (yacht?.id) {
+          const yachtRes = await fetch(`/api/admin/yachts/${yacht.id}`);
+          if (yachtRes.ok) {
+            const yachtData = await yachtRes.json();
+            setSelectedDestinationIds(yachtData.destinationIds || []);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading destinations:', error);
+      } finally {
+        setLoadingDestinations(false);
+      }
+    }
+    loadData();
+  }, [yacht?.id]);
+
+  const toggleDestination = (destId: string) => {
+    setSelectedDestinationIds(prev =>
+      prev.includes(destId)
+        ? prev.filter(id => id !== destId)
+        : [...prev, destId]
+    );
+  };
 
   const {
     register,
@@ -107,12 +162,16 @@ export function YachtForm({ yacht }: YachtFormProps) {
       const payload = {
         ...data,
         heroImage: heroImage ? JSON.stringify(heroImage) : null,
+        gallery: gallery.length > 0 ? JSON.stringify(gallery) : null,
+        summary: summary || null,
+        description: description || null,
         year: data.year || null,
         yearRefitted: data.yearRefitted || null,
         guests: data.guests || null,
         cabins: data.cabins || null,
         crew: data.crew || null,
         fromPrice: data.fromPrice || null,
+        destinationIds: selectedDestinationIds,
       };
 
       const url = yacht ? `/api/admin/yachts/${yacht.id}` : '/api/admin/yachts';
@@ -175,7 +234,7 @@ export function YachtForm({ yacht }: YachtFormProps) {
             <Label htmlFor="type">Type *</Label>
             <Select
               value={selectedType}
-              onValueChange={(value) => setValue('type', value as 'motor' | 'sailing' | 'catamaran')}
+              onValueChange={(value) => setValue('type', value as 'motor' | 'sailing' | 'power-catamaran' | 'sailing-catamaran')}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -183,7 +242,8 @@ export function YachtForm({ yacht }: YachtFormProps) {
               <SelectContent>
                 <SelectItem value="motor">Motor Yacht</SelectItem>
                 <SelectItem value="sailing">Sailing Yacht</SelectItem>
-                <SelectItem value="catamaran">Catamaran</SelectItem>
+                <SelectItem value="power-catamaran">Power Catamaran</SelectItem>
+                <SelectItem value="sailing-catamaran">Sailing Catamaran</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -203,14 +263,23 @@ export function YachtForm({ yacht }: YachtFormProps) {
           </div>
         </div>
 
-        <div className="mt-6 space-y-2">
-          <Label htmlFor="summary">Summary</Label>
-          <textarea
-            id="summary"
-            {...register('summary')}
-            rows={3}
-            className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Brief description of the yacht..."
+        <div className="mt-6">
+          <RichTextEditor
+            label="Summary"
+            value={summary}
+            onChange={setSummary}
+            placeholder="Brief description of the yacht (shown in cards and previews)..."
+            minHeight="100px"
+          />
+        </div>
+
+        <div className="mt-6">
+          <RichTextEditor
+            label="Full Description"
+            value={description}
+            onChange={setDescription}
+            placeholder="Write a detailed description of the yacht..."
+            minHeight="200px"
           />
         </div>
       </div>
@@ -225,6 +294,12 @@ export function YachtForm({ yacht }: YachtFormProps) {
             value={heroImage}
             onChange={setHeroImage}
             placeholder="Select a hero image from media library"
+          />
+
+          <GalleryManager
+            label="Gallery Images"
+            value={gallery}
+            onChange={setGallery}
           />
 
           <div className="space-y-2">
@@ -323,6 +398,74 @@ export function YachtForm({ yacht }: YachtFormProps) {
         </div>
       </div>
 
+      {/* Destinations */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+          <MapPin className="h-5 w-5" />
+          Linked Destinations
+        </h3>
+        <p className="text-sm text-slate-500 mb-4">
+          Select destinations where this yacht operates. These will be shown in the &quot;Explore with&quot; section on the yacht page.
+        </p>
+
+        {loadingDestinations ? (
+          <div className="flex items-center gap-2 text-slate-500">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading destinations...
+          </div>
+        ) : allDestinations.length === 0 ? (
+          <p className="text-slate-500">No destinations available. Create some destinations first.</p>
+        ) : (
+          <>
+            {/* Selected destinations */}
+            {selectedDestinationIds.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {selectedDestinationIds.map(id => {
+                  const dest = allDestinations.find(d => d.id === id);
+                  if (!dest) return null;
+                  return (
+                    <span
+                      key={id}
+                      className="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                    >
+                      {dest.name}
+                      <button
+                        type="button"
+                        onClick={() => toggleDestination(id)}
+                        className="hover:bg-primary/20 rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Available destinations */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {allDestinations.map(dest => {
+                const isSelected = selectedDestinationIds.includes(dest.id);
+                return (
+                  <button
+                    key={dest.id}
+                    type="button"
+                    onClick={() => toggleDestination(dest.id)}
+                    className={`text-left p-3 rounded-lg border transition-colors ${
+                      isSelected
+                        ? 'border-primary bg-primary/5 text-primary'
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">{dest.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
       {/* SEO */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">SEO</h3>
@@ -348,8 +491,8 @@ export function YachtForm({ yacht }: YachtFormProps) {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end gap-4">
+      {/* Actions - Sticky at bottom */}
+      <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 -mx-6 px-6 py-4 mt-8 flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={() => router.push('/admin/yachts')}>
           Cancel
         </Button>
