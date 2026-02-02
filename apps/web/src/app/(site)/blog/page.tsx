@@ -2,11 +2,21 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { PostCard } from "@/components/blog/PostCard";
 import { CTASection } from "@/components/CTASection";
+import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getAllPosts } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Blog",
-  description: "Insights, guides, and inspiration for your Mediterranean yacht charter adventure.",
+  title: "Yacht Charter Blog | Mediterranean Sailing Guides & Tips",
+  description: "Expert insights, destination guides, and inspiration for your Mediterranean yacht charter. Learn about sailing routes, best seasons, yacht types, and insider tips.",
+  alternates: {
+    canonical: "https://www.mediteranayachting.com/blog",
+  },
+  openGraph: {
+    title: "Yacht Charter Blog | Mediterranean Sailing Guides",
+    description: "Expert insights, destination guides, and inspiration for your Mediterranean yacht charter.",
+    url: "https://www.mediteranayachting.com/blog",
+    type: "website",
+  },
 };
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
@@ -81,6 +91,19 @@ export default async function BlogPage() {
         subtitle="Turn inspiration into reality. Let us help you plan your perfect Mediterranean yacht charter."
         primaryCta={{ label: "Start Planning", href: "/contact" }}
         variant="dark"
+      />
+
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Blog", url: "/blog" },
+        ]}
+      />
+      <WebPageSchema
+        title="Yacht Charter Blog | Mediterranean Sailing Guides & Tips"
+        description="Expert insights, destination guides, and inspiration for your Mediterranean yacht charter."
+        url="https://www.mediteranayachting.com/blog"
       />
     </>
   );

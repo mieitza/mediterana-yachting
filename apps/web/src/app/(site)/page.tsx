@@ -1,17 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
 import { Compass, Ship, Shield, Users, Calendar, Phone, ArrowRight, Star, Heart, Award, Anchor, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { YachtCard } from "@/components/yachts/YachtCard";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { PostCard } from "@/components/blog/PostCard";
 import { CTASection } from "@/components/CTASection";
+import { FAQSection, homepageFAQs } from "@/components/seo/FAQSection";
+import { WebPageSchema } from "@/components/seo/StructuredData";
 import {
   getFeaturedYachts,
   getAllDestinations,
   getLatestPosts,
   getHomePage,
 } from "@/lib/data";
+
+export const metadata: Metadata = {
+  title: "Mediterranean Yacht Charter | Luxury Sailing & Motor Yachts | Mediterana Yachting",
+  description: "Charter luxury yachts across the Mediterranean. Private sailing & motor yacht charters in Greece, Croatia, French Riviera & Amalfi Coast. Expert crew, bespoke itineraries. Enquire today!",
+  alternates: {
+    canonical: "https://www.mediteranayachting.com",
+  },
+  openGraph: {
+    title: "Mediterranean Yacht Charter | Luxury Sailing & Motor Yachts",
+    description: "Charter luxury yachts across the Mediterranean. Private sailing & motor yacht charters in Greece, Croatia, French Riviera & Amalfi Coast with expert crew.",
+    url: "https://www.mediteranayachting.com",
+    type: "website",
+  },
+};
 
 // Disable caching to always fetch fresh data
 export const revalidate = 0;
@@ -305,6 +322,13 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* FAQ Section */}
+      <FAQSection
+        title="Frequently Asked Questions"
+        subtitle="Everything you need to know about chartering a yacht in the Mediterranean."
+        items={homepageFAQs}
+      />
+
       {/* CTA Section */}
       <CTASection
         title={page.ctaTitle || defaultContent.ctaTitle}
@@ -318,6 +342,13 @@ export default async function HomePage() {
           href: "/yachts"
         }}
         backgroundImage={page.ctaBackgroundImage || undefined}
+      />
+
+      {/* Page Structured Data */}
+      <WebPageSchema
+        title="Mediterranean Yacht Charter | Luxury Sailing & Motor Yachts"
+        description="Charter luxury yachts across the Mediterranean. Private sailing & motor yacht charters in Greece, Croatia, French Riviera & Amalfi Coast."
+        url="https://www.mediteranayachting.com"
       />
     </>
   );

@@ -8,6 +8,7 @@ import { YachtGallery } from "@/components/yachts/YachtGallery";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { CTASection } from "@/components/CTASection";
+import { BreadcrumbSchema, YachtSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getYachtBySlug } from "@/lib/data";
 
 export const dynamic = 'force-dynamic'; // Always render dynamically
@@ -27,12 +28,22 @@ export async function generateMetadata({
     };
   }
 
+  const typeLabel = typeLabels[yacht.type] || "Yacht";
+  const title = yacht.seoTitle || `${yacht.name} | ${typeLabel} for Charter`;
+  const description = yacht.seoDescription || `Charter ${yacht.name}, a ${yacht.length || "luxury"} ${typeLabel.toLowerCase()}. ${yacht.guests ? `${yacht.guests} guests, ` : ""}${yacht.cabins ? `${yacht.cabins} cabins. ` : ""}Mediterranean charter with professional crew.`;
+  const url = `https://www.mediteranayachting.com/yachts/${slug}`;
+
   return {
-    title: yacht.seoTitle || yacht.name,
-    description: yacht.seoDescription || yacht.summary || undefined,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: `${yacht.name} | Mediterana Yachting`,
-      description: yacht.summary || undefined,
+      title: `${yacht.name} | ${typeLabel} Charter`,
+      description: `Charter ${yacht.name} in the Mediterranean. ${yacht.guests ? `${yacht.guests} guests. ` : ""}Professional crew, bespoke itineraries.`,
+      url,
+      type: "website",
       images: yacht.heroImage?.url ? [yacht.heroImage.url] : [],
     },
   };
@@ -59,34 +70,30 @@ export default async function YachtPage({
 
   const gallery = yacht.gallery || [];
   const images = gallery.length > 0 ? gallery : yacht.heroImage ? [yacht.heroImage] : [];
-
-  // JSON-LD structured data
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: yacht.name,
-    description: yacht.summary,
-    image: yacht.heroImage?.url,
-    brand: {
-      "@type": "Brand",
-      name: "Mediterana Yachting",
-    },
-    offers: yacht.fromPrice
-      ? {
-          "@type": "Offer",
-          price: yacht.fromPrice,
-          priceCurrency: yacht.currency || "EUR",
-          priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-          availability: "https://schema.org/InStock",
-        }
-      : undefined,
-  };
+  const typeLabel = typeLabels[yacht.type] || "Yacht";
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Yachts", url: "/yachts" },
+          { name: yacht.name, url: `/yachts/${slug}` },
+        ]}
+      />
+      <YachtSchema
+        name={yacht.name}
+        description={yacht.summary || `${yacht.name} - ${typeLabel} available for Mediterranean charter.`}
+        image={yacht.heroImage?.url || ""}
+        url={`/yachts/${slug}`}
+        priceFrom={yacht.fromPrice || undefined}
+        currency={yacht.currency || "EUR"}
+      />
+      <WebPageSchema
+        title={`${yacht.name} | ${typeLabel} for Charter`}
+        description={`Charter ${yacht.name} in the Mediterranean.`}
+        url={`https://www.mediteranayachting.com/yachts/${slug}`}
       />
 
       {/* Hero */}

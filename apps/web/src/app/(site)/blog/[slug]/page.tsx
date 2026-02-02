@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { Calendar, User, Tag, ArrowLeft, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/blog/PostCard";
 import { CTASection } from "@/components/CTASection";
-import { getPostBySlug, getPostSlugs, getLatestPosts } from "@/lib/data";
+import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
+import { getPostBySlug, getLatestPosts } from "@/lib/data";
 
+export const dynamic = 'force-dynamic'; // Always render dynamically
 export const revalidate = 0; // Disable caching to always fetch fresh data
-
-export async function generateStaticParams() {
-  const slugs = await getPostSlugs();
-  return slugs.map(({ slug }) => ({ slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -29,12 +27,18 @@ export async function generateMetadata({
     };
   }
 
+  const url = `https://www.mediteranayachting.com/blog/${slug}`;
+
   return {
     title: post.seoTitle || post.title,
     description: post.seoDescription || post.excerpt || undefined,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt || undefined,
+      url,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
       authors: post.author ? [post.author] : undefined,
@@ -71,13 +75,14 @@ export default async function BlogPostPage({
   // Get related posts (exclude current post)
   const relatedPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
-  // JSON-LD structured data
+  // JSON-LD structured data for BlogPosting
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
     image: post.coverImage?.url,
+    url: `https://www.mediteranayachting.com/blog/${slug}`,
     datePublished: post.publishedAt?.toISOString(),
     author: post.author
       ? {
@@ -88,6 +93,7 @@ export default async function BlogPostPage({
     publisher: {
       "@type": "Organization",
       name: "Mediterana Yachting",
+      url: "https://www.mediteranayachting.com",
       logo: {
         "@type": "ImageObject",
         url: "https://www.mediteranayachting.com/logo.png",
@@ -97,9 +103,24 @@ export default async function BlogPostPage({
 
   return (
     <>
-      <script
+      {/* Structured Data */}
+      <Script
+        id={`blog-post-schema-${slug}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Blog", url: "/blog" },
+          { name: post.title, url: `/blog/${slug}` },
+        ]}
+      />
+      <WebPageSchema
+        title={post.title}
+        description={post.excerpt || ""}
+        url={`https://www.mediteranayachting.com/blog/${slug}`}
+        dateModified={post.publishedAt?.toISOString()}
       />
 
       {/* Hero */}
@@ -168,9 +189,10 @@ export default async function BlogPostPage({
           <div className="max-w-3xl mx-auto">
             {/* Excerpt */}
             {post.excerpt && (
-              <p className="text-xl text-text-secondary mb-8 pb-8 border-b border-border">
-                {post.excerpt}
-              </p>
+              <div
+                className="text-xl text-text-secondary mb-8 pb-8 border-b border-border prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: post.excerpt }}
+              />
             )}
 
             {/* Body */}

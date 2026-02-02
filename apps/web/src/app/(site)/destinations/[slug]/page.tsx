@@ -7,14 +7,11 @@ import { Button } from "@/components/ui/button";
 import { YachtCard } from "@/components/yachts/YachtCard";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { CTASection } from "@/components/CTASection";
-import { getDestinationBySlug, getDestinationSlugs } from "@/lib/data";
+import { BreadcrumbSchema, DestinationSchema, WebPageSchema } from "@/components/seo/StructuredData";
+import { getDestinationBySlug } from "@/lib/data";
 
+export const dynamic = 'force-dynamic'; // Always render dynamically
 export const revalidate = 0; // Disable caching to always fetch fresh data
-
-export async function generateStaticParams() {
-  const slugs = await getDestinationSlugs();
-  return slugs.map(({ slug }) => ({ slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -30,12 +27,21 @@ export async function generateMetadata({
     };
   }
 
+  const title = destination.seoTitle || `${destination.name} Yacht Charter | Sailing & Motor Yacht Holidays`;
+  const description = destination.seoDescription || `Charter a luxury yacht to explore ${destination.name}. Best time to visit: ${destination.bestSeason}. ${destination.highlights?.slice(0, 3).join(", ")}. Expert crew & bespoke itineraries.`;
+  const url = `https://www.mediteranayachting.com/destinations/${slug}`;
+
   return {
-    title: destination.seoTitle || destination.name,
-    description: destination.seoDescription || `Discover ${destination.name} by yacht. Best time to visit: ${destination.bestSeason}. ${destination.highlights?.slice(0, 3).join(", ")}.`,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: `${destination.name} | Mediterana Yachting`,
-      description: `Charter a yacht to explore ${destination.name}`,
+      title: `${destination.name} Yacht Charter | Mediterana Yachting`,
+      description: `Charter a luxury yacht to explore ${destination.name}. ${destination.highlights?.slice(0, 2).join(", ")}.`,
+      url,
+      type: "website",
       images: destination.heroImage?.url ? [destination.heroImage.url] : [],
     },
   };
@@ -214,6 +220,26 @@ export default async function DestinationPage({
         primaryCta={{ label: "Start Planning", href: "/contact" }}
         secondaryCta={{ label: "View Our Fleet", href: "/yachts" }}
         backgroundImage={destination.heroImage?.url}
+      />
+
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Destinations", url: "/destinations" },
+          { name: destination.name, url: `/destinations/${slug}` },
+        ]}
+      />
+      <DestinationSchema
+        name={destination.name}
+        description={destination.seoDescription || `Charter a luxury yacht to explore ${destination.name}. Best time: ${destination.bestSeason}.`}
+        image={destination.heroImage?.url || ""}
+        url={`/destinations/${slug}`}
+      />
+      <WebPageSchema
+        title={`${destination.name} Yacht Charter`}
+        description={`Charter a luxury yacht to explore ${destination.name}.`}
+        url={`https://www.mediteranayachting.com/destinations/${slug}`}
       />
     </>
   );

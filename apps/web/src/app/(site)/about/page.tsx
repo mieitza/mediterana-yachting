@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Anchor, Users, Award, Globe, Shield, Ship, Compass, Heart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CTASection } from "@/components/CTASection";
+import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getAboutPage, getTeamMembers } from "@/lib/data";
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
@@ -75,9 +76,21 @@ async function getData() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const { page } = await getData();
+  const title = page?.seoTitle || "About Mediterana Yachting | Mediterranean Charter Experts";
+  const description = page?.seoDescription || "Learn about Mediterana Yachting - over 15 years of luxury yacht charter experience in the Mediterranean. Expert crew, bespoke itineraries, unmatched service.";
+
   return {
-    title: page?.seoTitle || defaultContent.seoTitle,
-    description: page?.seoDescription || defaultContent.seoDescription,
+    title,
+    description,
+    alternates: {
+      canonical: "https://www.mediteranayachting.com/about",
+    },
+    openGraph: {
+      title: "About Mediterana Yachting | Mediterranean Charter Experts",
+      description: "Over 15 years of luxury yacht charter experience in the Mediterranean. Expert crew, bespoke itineraries.",
+      url: "https://www.mediteranayachting.com/about",
+      type: "website",
+    },
   };
 }
 
@@ -273,6 +286,19 @@ export default async function AboutPage() {
           href: "/yachts",
         }}
         variant="dark"
+      />
+
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "About", url: "/about" },
+        ]}
+      />
+      <WebPageSchema
+        title="About Mediterana Yachting | Mediterranean Charter Experts"
+        description="Over 15 years of luxury yacht charter experience in the Mediterranean. Expert crew, bespoke itineraries."
+        url="https://www.mediteranayachting.com/about"
       />
     </>
   );

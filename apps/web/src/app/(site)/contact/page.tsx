@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { InquiryForm } from "@/components/forms/InquiryForm";
+import { FAQSection } from "@/components/seo/FAQSection";
+import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getContactPage } from "@/lib/data";
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
@@ -38,9 +40,21 @@ const defaultContent = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getContactPage();
+  const title = page?.seoTitle || "Contact Us | Book Your Mediterranean Yacht Charter";
+  const description = page?.seoDescription || "Contact Mediterana Yachting to book your luxury Mediterranean yacht charter. Expert charter specialists available to plan your bespoke sailing or motor yacht vacation.";
+
   return {
-    title: page?.seoTitle || defaultContent.seoTitle,
-    description: page?.seoDescription || defaultContent.seoDescription,
+    title,
+    description,
+    alternates: {
+      canonical: "https://www.mediteranayachting.com/contact",
+    },
+    openGraph: {
+      title: "Contact Mediterana Yachting | Book Your Yacht Charter",
+      description: "Contact our expert charter specialists to plan your luxury Mediterranean yacht vacation.",
+      url: "https://www.mediteranayachting.com/contact",
+      type: "website",
+    },
   };
 }
 
@@ -175,25 +189,28 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* FAQ Teaser */}
+      {/* FAQ Section with Schema */}
       {faqItems && faqItems.length > 0 && (
-        <section className="py-16 bg-bg-surface">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl md:text-3xl">{page?.faqTitle || defaultContent.faqTitle}</h2>
-            <p className="mt-4 text-text-secondary max-w-2xl mx-auto">
-              {defaultContent.faqDescription}
-            </p>
-            <div className="mt-8 grid md:grid-cols-3 gap-6 text-left max-w-4xl mx-auto">
-              {faqItems.slice(0, 3).map((faq: any, index: number) => (
-                <div key={index} className="bg-bg-base p-6 rounded-lg">
-                  <h3 className="font-medium text-text-primary">{faq.question}</h3>
-                  <p className="mt-2 text-text-secondary text-sm">{faq.answer}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <FAQSection
+          title={page?.faqTitle || defaultContent.faqTitle}
+          subtitle={defaultContent.faqDescription}
+          items={faqItems}
+          className="bg-bg-surface"
+        />
       )}
+
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Contact", url: "/contact" },
+        ]}
+      />
+      <WebPageSchema
+        title="Contact Us | Book Your Mediterranean Yacht Charter"
+        description="Contact Mediterana Yachting to book your luxury Mediterranean yacht charter."
+        url="https://www.mediteranayachting.com/contact"
+      />
     </>
   );
 }

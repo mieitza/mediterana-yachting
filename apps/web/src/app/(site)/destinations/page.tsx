@@ -2,11 +2,22 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { CTASection } from "@/components/CTASection";
+import { FAQSection, destinationFAQs } from "@/components/seo/FAQSection";
+import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getAllDestinations } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Destinations",
-  description: "Explore the most beautiful Mediterranean destinations for your luxury yacht charter.",
+  title: "Mediterranean Yacht Charter Destinations | Greece, Croatia, French Riviera",
+  description: "Discover the best Mediterranean yacht charter destinations. Sail to Greek Islands, Croatian Coast, French Riviera, Amalfi Coast & more. Expert local knowledge, bespoke itineraries.",
+  alternates: {
+    canonical: "https://www.mediteranayachting.com/destinations",
+  },
+  openGraph: {
+    title: "Mediterranean Yacht Charter Destinations",
+    description: "Discover the best Mediterranean yacht charter destinations. Greek Islands, Croatian Coast, French Riviera & more.",
+    url: "https://www.mediteranayachting.com/destinations",
+    type: "website",
+  },
 };
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
@@ -64,6 +75,13 @@ export default async function DestinationsPage() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <FAQSection
+        title="Destination Questions"
+        subtitle="Learn about Mediterranean yacht charter destinations."
+        items={destinationFAQs}
+      />
+
       {/* CTA */}
       <CTASection
         title="Not sure where to go?"
@@ -71,6 +89,19 @@ export default async function DestinationsPage() {
         primaryCta={{ label: "Get Expert Advice", href: "/contact" }}
         secondaryCta={{ label: "View Our Fleet", href: "/yachts" }}
         variant="light"
+      />
+
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Destinations", url: "/destinations" },
+        ]}
+      />
+      <WebPageSchema
+        title="Mediterranean Yacht Charter Destinations | Greece, Croatia, French Riviera"
+        description="Discover the best Mediterranean yacht charter destinations. Greek Islands, Croatian Coast, French Riviera & more."
+        url="https://www.mediteranayachting.com/destinations"
       />
     </>
   );

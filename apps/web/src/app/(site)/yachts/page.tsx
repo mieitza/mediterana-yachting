@@ -4,11 +4,22 @@ import { Suspense } from "react";
 import { YachtCard } from "@/components/yachts/YachtCard";
 import { YachtFilters } from "./YachtFilters";
 import { CTASection } from "@/components/CTASection";
+import { FAQSection, yachtsFAQs } from "@/components/seo/FAQSection";
+import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getAllYachts } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Our Yachts",
-  description: "Explore our curated fleet of luxury yachts available for charter in the Mediterranean.",
+  title: "Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts",
+  description: "Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter. Professional crew, premium amenities. Find your perfect yacht.",
+  alternates: {
+    canonical: "https://www.mediteranayachting.com/yachts",
+  },
+  openGraph: {
+    title: "Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts",
+    description: "Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter.",
+    url: "https://www.mediteranayachting.com/yachts",
+    type: "website",
+  },
 };
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
@@ -102,12 +113,32 @@ export default async function YachtsPage({ searchParams }: PageProps) {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <FAQSection
+        title="Yacht Charter Questions"
+        subtitle="Learn about our yacht types and charter options."
+        items={yachtsFAQs}
+      />
+
       {/* CTA */}
       <CTASection
         title="Can't find what you're looking for?"
         subtitle="Our team has access to an extensive network of yachts. Let us know your requirements and we'll find the perfect match."
         primaryCta={{ label: "Contact Us", href: "/contact" }}
         variant="light"
+      />
+
+      {/* Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Yachts", url: "/yachts" },
+        ]}
+      />
+      <WebPageSchema
+        title="Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts"
+        description="Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter."
+        url="https://www.mediteranayachting.com/yachts"
       />
     </>
   );
