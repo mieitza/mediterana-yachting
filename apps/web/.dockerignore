@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Development
+.env.local
+.env.*.local
+*.log
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+Caddyfile
+.dockerignore
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SQLite data (will be mounted as volume)
+/data/
+# Uploads (will be mounted as volume)
+public/uploads/
+
+# Documentation
+README.md
+*.md

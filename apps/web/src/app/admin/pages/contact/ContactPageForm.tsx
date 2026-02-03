@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Save, Plus, X, ExternalLink } from 'lucide-react';
 import { ImagePicker } from '@/components/admin/ImagePicker';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import type { ContactPage } from '@/lib/db/schema';
 import Link from 'next/link';
 
@@ -39,17 +40,19 @@ export function ContactPageForm({ page }: ContactPageFormProps) {
     page?.faqItems ? JSON.parse(page.faqItems) : []
   );
 
+  // Rich text fields
+  const [heroSubtitle, setHeroSubtitle] = useState(page?.heroSubtitle || '');
+  const [formDescription, setFormDescription] = useState(page?.formDescription || '');
+
   const { register, handleSubmit } = useForm({
     defaultValues: {
       heroTitle: page?.heroTitle || '',
-      heroSubtitle: page?.heroSubtitle || '',
       contactEmail: page?.contactEmail || '',
       contactPhone: page?.contactPhone || '',
       contactWhatsapp: page?.contactWhatsapp || '',
       contactAddress: page?.contactAddress || '',
       timezoneNote: page?.timezoneNote || '',
       formTitle: page?.formTitle || '',
-      formDescription: page?.formDescription || '',
       faqTitle: page?.faqTitle || '',
       seoTitle: page?.seoTitle || '',
       seoDescription: page?.seoDescription || '',
@@ -92,6 +95,8 @@ export function ContactPageForm({ page }: ContactPageFormProps) {
     try {
       const payload = {
         ...data,
+        heroSubtitle: heroSubtitle || null,
+        formDescription: formDescription || null,
         heroImage: heroImage ? JSON.stringify(heroImage) : null,
         officeHours: officeHours.length > 0 ? JSON.stringify(officeHours) : null,
         faqItems: faqItems.length > 0 ? JSON.stringify(faqItems) : null,
@@ -141,16 +146,13 @@ export function ContactPageForm({ page }: ContactPageFormProps) {
             <Input id="heroTitle" {...register('heroTitle')} placeholder="Contact Us" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="heroSubtitle">Subtitle</Label>
-            <textarea
-              id="heroSubtitle"
-              {...register('heroSubtitle')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Get in touch with our charter experts..."
-            />
-          </div>
+          <RichTextEditor
+            label="Subtitle"
+            value={heroSubtitle}
+            onChange={setHeroSubtitle}
+            placeholder="Get in touch with our charter experts..."
+            minHeight="80px"
+          />
 
           <ImagePicker
             label="Background Image"
@@ -241,16 +243,13 @@ export function ContactPageForm({ page }: ContactPageFormProps) {
             <Input id="formTitle" {...register('formTitle')} placeholder="Send Us a Message" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="formDescription">Description</Label>
-            <textarea
-              id="formDescription"
-              {...register('formDescription')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Have questions? We'd love to hear from you..."
-            />
-          </div>
+          <RichTextEditor
+            label="Description"
+            value={formDescription}
+            onChange={setFormDescription}
+            placeholder="Have questions? We'd love to hear from you..."
+            minHeight="80px"
+          />
         </div>
       </div>
 
@@ -326,8 +325,8 @@ export function ContactPageForm({ page }: ContactPageFormProps) {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end">
+      {/* Actions - Sticky at bottom */}
+      <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 -mx-6 px-6 py-4 mt-8 flex justify-end">
         <Button type="submit" disabled={isSaving}>
           {isSaving ? (
             <>

@@ -93,7 +93,7 @@ const sampleYachts = [
     name: 'Ocean Oasis',
     slug: 'ocean-oasis',
     featured: true,
-    type: 'catamaran' as const,
+    type: 'power-catamaran' as const,
     heroImage: JSON.stringify({
       url: 'https://images.unsplash.com/photo-1586018055391-fcc3ae9b4e53?w=1600&q=80',
       alt: 'Ocean Oasis luxury catamaran',

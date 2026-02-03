@@ -38,7 +38,7 @@ export const yachts = sqliteTable('yachts', {
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   featured: integer('featured', { mode: 'boolean' }).default(false),
-  type: text('type', { enum: ['motor', 'sailing', 'catamaran'] }).notNull(),
+  type: text('type', { enum: ['motor', 'sailing', 'power-catamaran', 'sailing-catamaran'] }).notNull(),
   heroImage: text('hero_image'), // JSON: { url, alt }
   gallery: text('gallery'), // JSON array
   videoUrl: text('video_url'),
@@ -290,6 +290,58 @@ export const contactPage = sqliteTable('contact_page', {
 });
 
 // ============================================
+// Destinations Page (Singleton)
+// ============================================
+export const destinationsPage = sqliteTable('destinations_page', {
+  id: text('id').primaryKey().default('destinations-page'),
+  // Hero Section
+  heroTitle: text('hero_title'),
+  heroSubtitle: text('hero_subtitle'),
+  heroImage: text('hero_image'), // JSON: { url, alt }
+  // Intro Section
+  introTitle: text('intro_title'),
+  introDescription: text('intro_description'),
+  // CTA Section
+  ctaTitle: text('cta_title'),
+  ctaDescription: text('cta_description'),
+  ctaButtonText: text('cta_button_text'),
+  ctaButtonHref: text('cta_button_href'),
+  ctaBackgroundImage: text('cta_background_image'),
+  // SEO
+  seoTitle: text('seo_title'),
+  seoDescription: text('seo_description'),
+  seoImage: text('seo_image'),
+  // Timestamps
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// ============================================
+// Blog Page (Singleton)
+// ============================================
+export const blogPage = sqliteTable('blog_page', {
+  id: text('id').primaryKey().default('blog-page'),
+  // Hero Section
+  heroTitle: text('hero_title'),
+  heroSubtitle: text('hero_subtitle'),
+  heroImage: text('hero_image'), // JSON: { url, alt }
+  // Intro Section
+  introTitle: text('intro_title'),
+  introDescription: text('intro_description'),
+  // Featured Section
+  featuredTitle: text('featured_title'),
+  featuredSubtitle: text('featured_subtitle'),
+  // Newsletter Section
+  newsletterTitle: text('newsletter_title'),
+  newsletterDescription: text('newsletter_description'),
+  // SEO
+  seoTitle: text('seo_title'),
+  seoDescription: text('seo_description'),
+  seoImage: text('seo_image'),
+  // Timestamps
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// ============================================
 // Custom Pages (Visual Editor)
 // ============================================
 export const pages = sqliteTable('pages', {
@@ -355,6 +407,20 @@ export const inquiries = sqliteTable('inquiries', {
 });
 
 // ============================================
+// Newsletter Subscribers
+// ============================================
+export const newsletterSubscribers = sqliteTable('newsletter_subscribers', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name'),
+  status: text('status', { enum: ['active', 'unsubscribed'] }).default('active').notNull(),
+  source: text('source'), // 'footer', 'homepage', 'blog'
+  unsubscribeToken: text('unsubscribe_token').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  unsubscribedAt: integer('unsubscribed_at', { mode: 'timestamp' }),
+});
+
+// ============================================
 // Type Exports
 // ============================================
 export type User = typeof users.$inferSelect;
@@ -379,9 +445,14 @@ export type SiteSettings = typeof siteSettings.$inferSelect;
 export type HomePage = typeof homePage.$inferSelect;
 export type AboutPage = typeof aboutPage.$inferSelect;
 export type ContactPage = typeof contactPage.$inferSelect;
+export type DestinationsPage = typeof destinationsPage.$inferSelect;
+export type BlogPage = typeof blogPage.$inferSelect;
 
 export type Page = typeof pages.$inferSelect;
 export type NewPage = typeof pages.$inferInsert;
 
 export type Inquiry = typeof inquiries.$inferSelect;
 export type NewInquiry = typeof inquiries.$inferInsert;
+
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+export type NewNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;

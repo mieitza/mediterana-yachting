@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Save, Plus, X, ExternalLink } from 'lucide-react';
 import { ImagePicker } from '@/components/admin/ImagePicker';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import type { HomePage } from '@/lib/db/schema';
 import Link from 'next/link';
 
@@ -43,11 +44,14 @@ export function HomePageForm({ page }: HomePageFormProps) {
     page?.ctaBackgroundImage ? { url: page.ctaBackgroundImage, alt: '' } : null
   );
 
+  // Rich text fields
+  const [heroSubtitle, setHeroSubtitle] = useState(page?.heroSubtitle || '');
+  const [ctaDescription, setCtaDescription] = useState(page?.ctaDescription || '');
+
   const { register, handleSubmit } = useForm({
     defaultValues: {
       heroTitle: page?.heroTitle || '',
       heroHighlight: page?.heroHighlight || '',
-      heroSubtitle: page?.heroSubtitle || '',
       featuredYachtsTitle: page?.featuredYachtsTitle || '',
       featuredYachtsSubtitle: page?.featuredYachtsSubtitle || '',
       destinationsTitle: page?.destinationsTitle || '',
@@ -59,7 +63,6 @@ export function HomePageForm({ page }: HomePageFormProps) {
       blogTitle: page?.blogTitle || '',
       blogSubtitle: page?.blogSubtitle || '',
       ctaTitle: page?.ctaTitle || '',
-      ctaDescription: page?.ctaDescription || '',
       ctaButtonText: page?.ctaButtonText || '',
       ctaButtonHref: page?.ctaButtonHref || '',
       seoTitle: page?.seoTitle || '',
@@ -104,6 +107,8 @@ export function HomePageForm({ page }: HomePageFormProps) {
     try {
       const payload = {
         ...data,
+        heroSubtitle: heroSubtitle || null,
+        ctaDescription: ctaDescription || null,
         heroImage: heroImage ? JSON.stringify(heroImage) : null,
         ctaBackgroundImage: ctaBackgroundImage?.url || null,
         whyMediteranaFeatures: features.length > 0 ? JSON.stringify(features) : null,
@@ -161,16 +166,13 @@ export function HomePageForm({ page }: HomePageFormProps) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="heroSubtitle">Subtitle</Label>
-            <textarea
-              id="heroSubtitle"
-              {...register('heroSubtitle')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Discover the finest yacht charter experiences..."
-            />
-          </div>
+          <RichTextEditor
+            label="Subtitle"
+            value={heroSubtitle}
+            onChange={setHeroSubtitle}
+            placeholder="Discover the finest yacht charter experiences..."
+            minHeight="80px"
+          />
 
           <ImagePicker
             label="Background Image"
@@ -344,15 +346,13 @@ export function HomePageForm({ page }: HomePageFormProps) {
             <Input id="ctaTitle" {...register('ctaTitle')} placeholder="Ready to Set Sail?" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="ctaDescription">Description</Label>
-            <textarea
-              id="ctaDescription"
-              {...register('ctaDescription')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
+          <RichTextEditor
+            label="Description"
+            value={ctaDescription}
+            onChange={setCtaDescription}
+            placeholder="Encourage visitors to take action..."
+            minHeight="80px"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -399,8 +399,8 @@ export function HomePageForm({ page }: HomePageFormProps) {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end">
+      {/* Actions - Sticky at bottom */}
+      <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 -mx-6 px-6 py-4 mt-8 flex justify-end">
         <Button type="submit" disabled={isSaving}>
           {isSaving ? (
             <>

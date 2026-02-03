@@ -20,6 +20,7 @@ import {
   Home,
   Info,
   Phone,
+  Send,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -61,12 +62,19 @@ const navigation = [
       { name: 'Home', href: '/admin/pages/home', icon: Home },
       { name: 'About', href: '/admin/pages/about', icon: Info },
       { name: 'Contact', href: '/admin/pages/contact', icon: Phone },
+      { name: 'Destinations', href: '/admin/pages/destinations', icon: MapPin },
+      { name: 'Blog', href: '/admin/pages/blog', icon: FileText },
     ],
   },
   {
     name: 'Inquiries',
     href: '/admin/inquiries',
     icon: Mail,
+  },
+  {
+    name: 'Newsletter',
+    href: '/admin/newsletter/subscribers',
+    icon: Send,
   },
   {
     name: 'Settings',

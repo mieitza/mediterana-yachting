@@ -28,9 +28,16 @@ interface InquiryData {
 async function verifyTurnstile(token: string): Promise<boolean> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
-  if (!secretKey) {
+  // Skip verification if Turnstile is not properly configured
+  // Secret keys start with '0x' prefix
+  if (!secretKey || !secretKey.startsWith("0x")) {
     console.warn("Turnstile secret key not configured, skipping verification");
     return true;
+  }
+
+  // If no token was provided, verification fails
+  if (!token) {
+    return false;
   }
 
   try {

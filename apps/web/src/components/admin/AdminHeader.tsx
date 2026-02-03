@@ -16,9 +16,10 @@ import { signOut } from 'next-auth/react';
 interface AdminHeaderProps {
   title?: string;
   children?: React.ReactNode;
+  actions?: React.ReactNode;
 }
 
-export function AdminHeader({ title, children }: AdminHeaderProps) {
+export function AdminHeader({ title, children, actions }: AdminHeaderProps) {
   const { data: session } = useSession();
 
   return (
@@ -32,6 +33,7 @@ export function AdminHeader({ title, children }: AdminHeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
+          {actions}
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />

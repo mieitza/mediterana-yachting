@@ -4,15 +4,20 @@ import { Users, Ruler, Anchor } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { YachtData } from "@/lib/types";
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
 interface YachtCardProps {
   yacht: Pick<YachtData, "name" | "slug" | "type" | "heroImage" | "summary" | "length" | "guests" | "cabins" | "fromPrice" | "currency">;
   className?: string;
 }
 
-const typeLabels = {
+const typeLabels: Record<string, string> = {
   motor: "Motor Yacht",
   sailing: "Sailing Yacht",
-  catamaran: "Catamaran",
+  "power-catamaran": "Power Catamaran",
+  "sailing-catamaran": "Sailing Catamaran",
 };
 
 export function YachtCard({ yacht, className }: YachtCardProps) {
@@ -35,7 +40,7 @@ export function YachtCard({ yacht, className }: YachtCardProps) {
           )}
           {/* Type Badge */}
           <div className="absolute top-4 left-4">
-            <span className="bg-bg-surface/90 backdrop-blur-sm text-text-primary text-xs font-medium px-3 py-1.5 rounded-full">
+            <span className="bg-white/95 backdrop-blur-sm text-slate-800 text-xs font-medium px-3 py-1.5 rounded-full shadow-md">
               {typeLabels[yacht.type]}
             </span>
           </div>
@@ -83,7 +88,7 @@ export function YachtCard({ yacht, className }: YachtCardProps) {
           {/* Summary */}
           {yacht.summary && (
             <p className="mt-3 text-text-secondary text-sm line-clamp-2">
-              {yacht.summary}
+              {stripHtml(yacht.summary)}
             </p>
           )}
         </div>

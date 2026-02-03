@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
@@ -35,6 +35,17 @@ export function YachtGallery({ images, yachtName }: YachtGalleryProps) {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
+
+  // Register onSelect callback with Embla
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', onSelect);
+    // Also call onSelect immediately to sync initial state
+    onSelect();
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi, onSelect]);
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
@@ -75,10 +86,10 @@ export function YachtGallery({ images, yachtName }: YachtGalleryProps) {
                 {/* Expand button */}
                 <button
                   onClick={() => openLightbox(index)}
-                  className="absolute bottom-4 right-4 bg-bg-surface/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                   aria-label="View fullscreen"
                 >
-                  <Expand className="h-5 w-5 text-text-primary" />
+                  <Expand className="h-5 w-5 text-slate-800" />
                 </button>
               </div>
             ))}
@@ -90,17 +101,17 @@ export function YachtGallery({ images, yachtName }: YachtGalleryProps) {
           <>
             <button
               onClick={scrollPrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-bg-surface/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-surface"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-md"
               aria-label="Previous image"
             >
-              <ChevronLeft className="h-6 w-6 text-text-primary" />
+              <ChevronLeft className="h-6 w-6 text-slate-800" />
             </button>
             <button
               onClick={scrollNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-bg-surface/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-surface"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-md"
               aria-label="Next image"
             >
-              <ChevronRight className="h-6 w-6 text-text-primary" />
+              <ChevronRight className="h-6 w-6 text-slate-800" />
             </button>
           </>
         )}

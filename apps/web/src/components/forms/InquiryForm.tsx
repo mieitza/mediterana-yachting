@@ -46,7 +46,7 @@ interface InquiryFormProps {
 declare global {
   interface Window {
     turnstile?: {
-      render: (container: HTMLElement, options: any) => string;
+      render: (container: HTMLElement, options: Record<string, unknown>) => string;
       reset: (widgetId: string) => void;
       getResponse: (widgetId: string) => string | undefined;
     };
@@ -90,10 +90,21 @@ export function InquiryForm({
     },
   });
 
+  // Check if Turnstile is properly configured (not a placeholder value)
+  const isTurnstileConfigured = () => {
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    if (!siteKey) return false;
+    // Cloudflare Turnstile site keys start with '0x' and are 20+ chars
+    // Skip placeholder values like 'your_turnstile_site_key'
+    return siteKey.startsWith('0x') && siteKey.length >= 20;
+  };
+
+  const turnstileConfigured = isTurnstileConfigured();
+
   // Load Turnstile script
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-    if (!siteKey || !turnstileRef.current) return;
+    if (!turnstileConfigured || !siteKey || !turnstileRef.current) return;
 
     // Check if script already exists
     if (!document.querySelector('script[src*="turnstile"]')) {
@@ -124,9 +135,6 @@ export function InquiryForm({
       }
     }
   }, []);
-
-  // Check if Turnstile is configured
-  const turnstileConfigured = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const onSubmit = async (data: InquiryFormData) => {
     // Only require Turnstile token if it's configured

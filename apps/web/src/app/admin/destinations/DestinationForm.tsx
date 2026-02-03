@@ -10,6 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Save, Plus, X } from 'lucide-react';
 import { ImagePicker } from '@/components/admin/ImagePicker';
+import { GalleryManager } from '@/components/admin/GalleryManager';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
+import { YachtsPicker } from '@/components/admin/YachtsPicker';
 import type { Destination } from '@/lib/db/schema';
 
 const destinationSchema = z.object({
@@ -24,18 +27,26 @@ type DestinationFormData = z.infer<typeof destinationSchema>;
 
 interface DestinationFormProps {
   destination?: Destination;
+  recommendedYachtIds?: string[];
 }
 
-export function DestinationForm({ destination }: DestinationFormProps) {
+export function DestinationForm({ destination, recommendedYachtIds = [] }: DestinationFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [highlights, setHighlights] = useState<string[]>(
     destination?.highlights ? JSON.parse(destination.highlights) : []
   );
   const [newHighlight, setNewHighlight] = useState('');
+  const [selectedYachtIds, setSelectedYachtIds] = useState<string[]>(recommendedYachtIds);
 
   const initialHeroImage = destination?.heroImage ? JSON.parse(destination.heroImage) : null;
   const [heroImage, setHeroImage] = useState<{ url: string; alt?: string } | null>(initialHeroImage);
+
+  const initialGallery = destination?.gallery ? JSON.parse(destination.gallery) : [];
+  const [gallery, setGallery] = useState<{ url: string; alt?: string }[]>(initialGallery);
+
+  const [description, setDescription] = useState(destination?.description || '');
+  const [itinerary, setItinerary] = useState(destination?.itinerary || '');
 
   const {
     register,
@@ -78,7 +89,11 @@ export function DestinationForm({ destination }: DestinationFormProps) {
       const payload = {
         ...data,
         heroImage: heroImage ? JSON.stringify(heroImage) : null,
+        gallery: gallery.length > 0 ? JSON.stringify(gallery) : null,
         highlights: highlights.length > 0 ? JSON.stringify(highlights) : null,
+        description: description || null,
+        itinerary: itinerary || null,
+        recommendedYachtIds: selectedYachtIds,
       };
 
       const url = destination ? `/api/admin/destinations/${destination.id}` : '/api/admin/destinations';
@@ -148,12 +163,20 @@ export function DestinationForm({ destination }: DestinationFormProps) {
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Media</h3>
 
-        <ImagePicker
-          label="Hero Image"
-          value={heroImage}
-          onChange={setHeroImage}
-          placeholder="Select a hero image from media library"
-        />
+        <div className="space-y-6">
+          <ImagePicker
+            label="Hero Image"
+            value={heroImage}
+            onChange={setHeroImage}
+            placeholder="Select a hero image from media library"
+          />
+
+          <GalleryManager
+            label="Gallery Images"
+            value={gallery}
+            onChange={setGallery}
+          />
+        </div>
       </div>
 
       {/* Highlights */}
@@ -200,6 +223,39 @@ export function DestinationForm({ destination }: DestinationFormProps) {
         </div>
       </div>
 
+      {/* Content */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">Content</h3>
+
+        <div className="space-y-6">
+          <RichTextEditor
+            label="Description"
+            value={description}
+            onChange={setDescription}
+            placeholder="Write a detailed description of this destination..."
+          />
+
+          <RichTextEditor
+            label="Sample Itinerary"
+            value={itinerary}
+            onChange={setItinerary}
+            placeholder="Describe a typical itinerary for this destination..."
+          />
+        </div>
+      </div>
+
+      {/* Recommended Yachts */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">Recommended Yachts</h3>
+        <p className="text-sm text-slate-500 mb-4">
+          Select yachts that are recommended for charter in this destination. Drag to reorder.
+        </p>
+        <YachtsPicker
+          value={selectedYachtIds}
+          onChange={setSelectedYachtIds}
+        />
+      </div>
+
       {/* SEO */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">SEO</h3>
@@ -225,8 +281,8 @@ export function DestinationForm({ destination }: DestinationFormProps) {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end gap-4">
+      {/* Actions - Sticky at bottom */}
+      <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 -mx-6 px-6 py-4 mt-8 flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={() => router.push('/admin/destinations')}>
           Cancel
         </Button>

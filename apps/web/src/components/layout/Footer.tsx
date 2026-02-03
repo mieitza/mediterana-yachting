@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Instagram, Facebook, Linkedin, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { getSiteSettings } from "@/lib/data";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 interface FooterLink {
   label: string;
@@ -120,7 +121,7 @@ export async function Footer() {
   return (
     <footer className="bg-navy text-white">
       <div className="container mx-auto px-4 py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="font-serif text-2xl font-medium tracking-tight text-white">
@@ -223,6 +224,9 @@ export async function Footer() {
               )}
             </ul>
           </div>
+
+          {/* Newsletter */}
+          <NewsletterSignup variant="inline" source="footer" />
         </div>
 
         {/* Bottom */}

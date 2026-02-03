@@ -11,7 +11,7 @@ export interface YachtData {
   name: string;
   slug: string;
   featured?: boolean | null;
-  type: 'motor' | 'sailing' | 'catamaran';
+  type: 'motor' | 'sailing' | 'power-catamaran' | 'sailing-catamaran';
   heroImage: ImageData | null;
   gallery?: ImageData[] | null;
   videoUrl?: string | null;

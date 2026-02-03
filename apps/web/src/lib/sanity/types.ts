@@ -39,7 +39,7 @@ export interface Yacht {
   name: string;
   slug: { current: string };
   featured: boolean;
-  type: "motor" | "sailing" | "catamaran";
+  type: "motor" | "sailing" | "power-catamaran" | "sailing-catamaran";
   heroImage: ExternalImage;
   gallery: ExternalImage[];
   videoUrl?: string;

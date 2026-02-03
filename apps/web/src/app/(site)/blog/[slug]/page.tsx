@@ -140,7 +140,7 @@ export default async function BlogPostPage({
 
         {/* Back link */}
         <div className="absolute top-24 md:top-28 left-4 z-20">
-          <Button asChild variant="outline" size="sm" className="bg-white text-black border-slate-300 hover:bg-slate-100">
+          <Button asChild variant="outline" size="sm" className="bg-white text-slate-800 border-slate-300 hover:bg-slate-100 shadow-md">
             <Link href="/blog">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Blog

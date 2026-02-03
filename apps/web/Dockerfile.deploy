@@ -1,0 +1,29 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy pre-built standalone app
+COPY .next/standalone/apps/web/.next ./.next
+COPY .next/standalone/apps/web/server.js ./server.js
+COPY .next/standalone/apps/web/package.json ./package.json
+COPY .next/standalone/node_modules ./node_modules
+COPY .next/static ./.next/static
+COPY public ./public
+
+RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
+RUN chown -R nextjs:nodejs /app/public
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]

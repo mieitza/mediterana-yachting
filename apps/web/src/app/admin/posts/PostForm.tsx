@@ -9,14 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Save, Plus, X } from 'lucide-react';
-import { RichTextEditor } from '@/components/admin/editor/RichTextEditor';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import { ImagePicker } from '@/components/admin/ImagePicker';
 import type { Post } from '@/lib/db/schema';
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
-  excerpt: z.string().max(200, 'Excerpt must be 200 characters or less').optional(),
   author: z.string().optional(),
   publishedAt: z.string().optional(),
   seoTitle: z.string().optional(),
@@ -32,6 +31,7 @@ interface PostFormProps {
 export function PostForm({ post }: PostFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [excerpt, setExcerpt] = useState(post?.excerpt || '');
   const [body, setBody] = useState(post?.body || '');
   const [tags, setTags] = useState<string[]>(
     post?.tags ? JSON.parse(post.tags) : []
@@ -56,7 +56,6 @@ export function PostForm({ post }: PostFormProps) {
     defaultValues: {
       title: post?.title || '',
       slug: post?.slug || '',
-      excerpt: post?.excerpt || '',
       author: post?.author || '',
       publishedAt: formatDateForInput(post?.publishedAt || null),
       seoTitle: post?.seoTitle || '',
@@ -88,6 +87,7 @@ export function PostForm({ post }: PostFormProps) {
     try {
       const payload = {
         ...data,
+        excerpt: excerpt || null,
         body: body || null,
         coverImage: coverImage ? JSON.stringify(coverImage) : null,
         tags: tags.length > 0 ? JSON.stringify(tags) : null,
@@ -151,17 +151,13 @@ export function PostForm({ post }: PostFormProps) {
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
-            <textarea
-              id="excerpt"
-              {...register('excerpt')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Brief summary of the post (max 200 characters)"
+            <RichTextEditor
+              label="Excerpt"
+              value={excerpt}
+              onChange={setExcerpt}
+              placeholder="Brief summary of the post..."
+              minHeight="80px"
             />
-            {errors.excerpt && (
-              <p className="text-sm text-red-600">{errors.excerpt.message}</p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -196,7 +192,12 @@ export function PostForm({ post }: PostFormProps) {
       {/* Content */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Content</h3>
-        <RichTextEditor content={body} onChange={setBody} />
+        <RichTextEditor
+          value={body}
+          onChange={setBody}
+          placeholder="Write your blog post content..."
+          minHeight="300px"
+        />
       </div>
 
       {/* Tags */}
@@ -268,8 +269,8 @@ export function PostForm({ post }: PostFormProps) {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end gap-4">
+      {/* Actions - Sticky at bottom */}
+      <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 -mx-6 px-6 py-4 mt-8 flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={() => router.push('/admin/posts')}>
           Cancel
         </Button>

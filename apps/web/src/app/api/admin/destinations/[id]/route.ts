@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { db, destinations } from '@/lib/db';
+import { db, destinations, destinationRecommendedYachts } from '@/lib/db';
 import { eq } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -22,7 +23,17 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Destination not found' }, { status: 404 });
     }
 
-    return NextResponse.json(destination);
+    // Get recommended yacht IDs
+    const recommendedYachts = db
+      .select({ yachtId: destinationRecommendedYachts.yachtId })
+      .from(destinationRecommendedYachts)
+      .where(eq(destinationRecommendedYachts.destinationId, id))
+      .orderBy(destinationRecommendedYachts.order)
+      .all();
+
+    const recommendedYachtIds = recommendedYachts.map(r => r.yachtId);
+
+    return NextResponse.json({ ...destination, recommendedYachtIds });
   } catch (error) {
     console.error('Error fetching destination:', error);
     return NextResponse.json({ error: 'Failed to fetch destination' }, { status: 500 });
@@ -63,7 +74,26 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     db.update(destinations).set(updatedDestination).where(eq(destinations.id, id)).run();
 
-    return NextResponse.json({ ...existingDestination, ...updatedDestination });
+    // Handle recommended yachts
+    if (body.recommendedYachtIds !== undefined) {
+      // Delete existing recommended yachts
+      db.delete(destinationRecommendedYachts)
+        .where(eq(destinationRecommendedYachts.destinationId, id))
+        .run();
+
+      // Insert new recommended yachts with order
+      const yachtIds = body.recommendedYachtIds || [];
+      for (let i = 0; i < yachtIds.length; i++) {
+        db.insert(destinationRecommendedYachts).values({
+          id: nanoid(),
+          destinationId: id,
+          yachtId: yachtIds[i],
+          order: i,
+        }).run();
+      }
+    }
+
+    return NextResponse.json({ ...existingDestination, ...updatedDestination, recommendedYachtIds: body.recommendedYachtIds || [] });
   } catch (error) {
     console.error('Error updating destination:', error);
     return NextResponse.json({ error: 'Failed to update destination' }, { status: 500 });

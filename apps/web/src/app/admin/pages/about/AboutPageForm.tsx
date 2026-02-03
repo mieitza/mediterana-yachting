@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Save, Plus, X, ExternalLink } from 'lucide-react';
 import { ImagePicker } from '@/components/admin/ImagePicker';
+import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import type { AboutPage } from '@/lib/db/schema';
 import Link from 'next/link';
 
@@ -54,12 +55,15 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
     page?.processSteps ? JSON.parse(page.processSteps) : []
   );
 
+  // Rich text fields
+  const [heroSubtitle, setHeroSubtitle] = useState(page?.heroSubtitle || '');
+  const [storyContent, setStoryContent] = useState(page?.storyContent || '');
+  const [ctaDescription, setCtaDescription] = useState(page?.ctaDescription || '');
+
   const { register, handleSubmit } = useForm({
     defaultValues: {
       heroTitle: page?.heroTitle || '',
-      heroSubtitle: page?.heroSubtitle || '',
       storyTitle: page?.storyTitle || '',
-      storyContent: page?.storyContent || '',
       valuesTitle: page?.valuesTitle || '',
       valuesSubtitle: page?.valuesSubtitle || '',
       processTitle: page?.processTitle || '',
@@ -67,7 +71,6 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
       teamTitle: page?.teamTitle || '',
       teamSubtitle: page?.teamSubtitle || '',
       ctaTitle: page?.ctaTitle || '',
-      ctaDescription: page?.ctaDescription || '',
       ctaButtonText: page?.ctaButtonText || '',
       ctaButtonHref: page?.ctaButtonHref || '',
       seoTitle: page?.seoTitle || '',
@@ -129,6 +132,9 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
     try {
       const payload = {
         ...data,
+        heroSubtitle: heroSubtitle || null,
+        storyContent: storyContent || null,
+        ctaDescription: ctaDescription || null,
         heroImage: heroImage ? JSON.stringify(heroImage) : null,
         storyImage: storyImage ? JSON.stringify(storyImage) : null,
         ctaBackgroundImage: ctaBackgroundImage?.url || null,
@@ -181,16 +187,13 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
             <Input id="heroTitle" {...register('heroTitle')} placeholder="About Mediterana Yachting" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="heroSubtitle">Subtitle</Label>
-            <textarea
-              id="heroSubtitle"
-              {...register('heroSubtitle')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Your trusted partner in luxury yacht charters..."
-            />
-          </div>
+          <RichTextEditor
+            label="Subtitle"
+            value={heroSubtitle}
+            onChange={setHeroSubtitle}
+            placeholder="Your trusted partner in luxury yacht charters..."
+            minHeight="80px"
+          />
 
           <ImagePicker
             label="Background Image"
@@ -211,16 +214,13 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
             <Input id="storyTitle" {...register('storyTitle')} placeholder="Our Story" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="storyContent">Content</Label>
-            <textarea
-              id="storyContent"
-              {...register('storyContent')}
-              rows={6}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Tell your company's story..."
-            />
-          </div>
+          <RichTextEditor
+            label="Content"
+            value={storyContent}
+            onChange={setStoryContent}
+            placeholder="Tell your company's story..."
+            minHeight="200px"
+          />
 
           <ImagePicker
             label="Story Image"
@@ -397,15 +397,13 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
             <Input id="ctaTitle" {...register('ctaTitle')} placeholder="Ready to Set Sail?" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="ctaDescription">Description</Label>
-            <textarea
-              id="ctaDescription"
-              {...register('ctaDescription')}
-              rows={2}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
+          <RichTextEditor
+            label="Description"
+            value={ctaDescription}
+            onChange={setCtaDescription}
+            placeholder="Encourage visitors to take action..."
+            minHeight="80px"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -452,8 +450,8 @@ export function AboutPageForm({ page }: AboutPageFormProps) {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end">
+      {/* Actions - Sticky at bottom */}
+      <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 -mx-6 px-6 py-4 mt-8 flex justify-end">
         <Button type="submit" disabled={isSaving}>
           {isSaving ? (
             <>

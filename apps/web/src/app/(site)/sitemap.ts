@@ -1,6 +1,10 @@
 import { MetadataRoute } from "next";
 import { getYachtSlugs, getDestinationSlugs, getPostSlugs } from "@/lib/data";
 
+// Force dynamic generation at runtime
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Regenerate every hour
+
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.mediteranayachting.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

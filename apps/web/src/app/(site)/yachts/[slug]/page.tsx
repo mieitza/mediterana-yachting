@@ -100,7 +100,7 @@ export default async function YachtPage({
       <section className="relative pt-24 md:pt-28">
         {/* Back link */}
         <div className="absolute top-24 md:top-28 left-4 z-20">
-          <Button asChild variant="outline" size="sm" className="bg-white text-black border-slate-300 hover:bg-slate-100">
+          <Button asChild variant="outline" size="sm" className="bg-white text-slate-800 border-slate-300 hover:bg-slate-100 shadow-md">
             <Link href="/yachts">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Fleet

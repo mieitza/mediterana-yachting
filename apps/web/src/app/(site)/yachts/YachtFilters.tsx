@@ -63,7 +63,8 @@ export function YachtFilters() {
             <SelectItem value="all">All types</SelectItem>
             <SelectItem value="motor">Motor Yacht</SelectItem>
             <SelectItem value="sailing">Sailing Yacht</SelectItem>
-            <SelectItem value="catamaran">Catamaran</SelectItem>
+            <SelectItem value="power-catamaran">Power Catamaran</SelectItem>
+            <SelectItem value="sailing-catamaran">Sailing Catamaran</SelectItem>
           </SelectContent>
         </Select>
       </div>

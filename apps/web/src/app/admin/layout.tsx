@@ -1,6 +1,9 @@
 import { SessionProvider } from 'next-auth/react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
+// Force all admin pages to be dynamic (server-rendered)
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Admin | Mediterana Yachting',
   robots: 'noindex, nofollow',
