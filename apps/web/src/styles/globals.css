@@ -54,7 +54,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-medium tracking-tight text-text-primary;
+    @apply font-serif font-medium tracking-tight;
+    /* Color inherited from parent - allows text-white on hero sections */
   }
 
   h1 {

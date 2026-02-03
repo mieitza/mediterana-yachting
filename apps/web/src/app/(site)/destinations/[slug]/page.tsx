@@ -72,7 +72,7 @@ export default async function DestinationPage({
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/40 to-navy/20" />
 
         {/* Back link */}
         <div className="absolute top-24 md:top-28 left-4 z-20">

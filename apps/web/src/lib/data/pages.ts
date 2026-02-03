@@ -1,4 +1,4 @@
-import { db, homePage, aboutPage, contactPage, siteSettings, teamMembers } from '@/lib/db';
+import { db, homePage, aboutPage, contactPage, siteSettings, teamMembers, blogPage, destinationsPage } from '@/lib/db';
 import { asc } from 'drizzle-orm';
 import { resolveImage } from './utils';
 
@@ -103,4 +103,27 @@ export async function getTeamMembers() {
     ...member,
     image: resolveImage(member.image ? JSON.parse(member.image) : null),
   }));
+}
+
+export async function getBlogPage() {
+  const page = db.select().from(blogPage).get();
+
+  if (!page) return null;
+
+  return {
+    ...page,
+    heroImage: resolveImage(page.heroImage ? JSON.parse(page.heroImage) : null),
+  };
+}
+
+export async function getDestinationsPage() {
+  const page = db.select().from(destinationsPage).get();
+
+  if (!page) return null;
+
+  return {
+    ...page,
+    heroImage: resolveImage(page.heroImage ? JSON.parse(page.heroImage) : null),
+    ctaBackgroundImage: resolveImage(page.ctaBackgroundImage ? JSON.parse(page.ctaBackgroundImage) : null),
+  };
 }

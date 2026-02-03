@@ -4,26 +4,51 @@ import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { CTASection } from "@/components/CTASection";
 import { FAQSection, destinationFAQs } from "@/components/seo/FAQSection";
 import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
-import { getAllDestinations } from "@/lib/data";
-
-export const metadata: Metadata = {
-  title: "Mediterranean Yacht Charter Destinations | Greece, Croatia, French Riviera",
-  description: "Discover the best Mediterranean yacht charter destinations. Sail to Greek Islands, Croatian Coast, French Riviera, Amalfi Coast & more. Expert local knowledge, bespoke itineraries.",
-  alternates: {
-    canonical: "https://www.mediteranayachting.com/destinations",
-  },
-  openGraph: {
-    title: "Mediterranean Yacht Charter Destinations",
-    description: "Discover the best Mediterranean yacht charter destinations. Greek Islands, Croatian Coast, French Riviera & more.",
-    url: "https://www.mediteranayachting.com/destinations",
-    type: "website",
-  },
-};
+import { getAllDestinations, getDestinationsPage } from "@/lib/data";
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
 
+// Default content
+const defaultContent = {
+  heroTitle: "Destinations",
+  heroSubtitle: "From the azure waters of Greece to the glamorous ports of the French Riviera, discover your perfect Mediterranean escape.",
+  heroImage: { url: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1920&q=80", alt: "Mediterranean coastline" },
+  introTitle: "Explore the Mediterranean",
+  ctaTitle: "Not sure where to go?",
+  ctaDescription: "Our charter specialists can help you choose the perfect destination based on your interests, time of year, and preferred experiences.",
+  ctaButtonText: "Get Expert Advice",
+  ctaButtonHref: "/contact",
+  seoTitle: "Mediterranean Yacht Charter Destinations | Greece, Croatia, French Riviera",
+  seoDescription: "Discover the best Mediterranean yacht charter destinations. Sail to Greek Islands, Croatian Coast, French Riviera, Amalfi Coast & more. Expert local knowledge, bespoke itineraries.",
+};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getDestinationsPage();
+  const title = page?.seoTitle || defaultContent.seoTitle;
+  const description = page?.seoDescription || defaultContent.seoDescription;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: "https://www.mediteranayachting.com/destinations",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "https://www.mediteranayachting.com/destinations",
+      type: "website",
+    },
+  };
+}
+
 export default async function DestinationsPage() {
-  const destinations = await getAllDestinations();
+  const [destinations, page] = await Promise.all([
+    getAllDestinations(),
+    getDestinationsPage(),
+  ]);
+
+  const heroImage = page?.heroImage || defaultContent.heroImage;
 
   return (
     <>
@@ -31,8 +56,8 @@ export default async function DestinationsPage() {
       <section className="relative pt-32 pb-16 md:pt-40 md:pb-20">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1920&q=80"
-            alt="Mediterranean coastline"
+            src={heroImage?.url || defaultContent.heroImage.url}
+            alt={heroImage?.alt || "Destinations hero"}
             fill
             className="object-cover"
             priority
@@ -41,12 +66,27 @@ export default async function DestinationsPage() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10 text-white text-center">
-          <h1 className="text-shadow">Destinations</h1>
+          <h1 className="text-shadow">{page?.heroTitle || defaultContent.heroTitle}</h1>
           <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-            From the azure waters of Greece to the glamorous ports of the French Riviera, discover your perfect Mediterranean escape.
+            {page?.heroSubtitle || defaultContent.heroSubtitle}
           </p>
         </div>
       </section>
+
+      {/* Intro Section */}
+      {(page?.introTitle || page?.introDescription) && (
+        <section className="py-16 bg-bg-surface">
+          <div className="container mx-auto px-4 text-center max-w-3xl">
+            {page?.introTitle && <h2 className="text-2xl md:text-3xl mb-4">{page.introTitle}</h2>}
+            {page?.introDescription && (
+              <div
+                className="prose prose-lg max-w-none mx-auto"
+                dangerouslySetInnerHTML={{ __html: page.introDescription }}
+              />
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Destinations Grid */}
       <section className="section-padding bg-bg-base">
@@ -84,11 +124,15 @@ export default async function DestinationsPage() {
 
       {/* CTA */}
       <CTASection
-        title="Not sure where to go?"
-        subtitle="Our charter specialists can help you choose the perfect destination based on your interests, time of year, and preferred experiences."
-        primaryCta={{ label: "Get Expert Advice", href: "/contact" }}
+        title={page?.ctaTitle || defaultContent.ctaTitle}
+        subtitle={page?.ctaDescription || defaultContent.ctaDescription}
+        primaryCta={{
+          label: page?.ctaButtonText || defaultContent.ctaButtonText,
+          href: page?.ctaButtonHref || defaultContent.ctaButtonHref
+        }}
         secondaryCta={{ label: "View Our Fleet", href: "/yachts" }}
-        variant="light"
+        backgroundImage={page?.ctaBackgroundImage?.url}
+        variant={page?.ctaBackgroundImage?.url ? "default" : "light"}
       />
 
       {/* Structured Data */}
@@ -99,8 +143,8 @@ export default async function DestinationsPage() {
         ]}
       />
       <WebPageSchema
-        title="Mediterranean Yacht Charter Destinations | Greece, Croatia, French Riviera"
-        description="Discover the best Mediterranean yacht charter destinations. Greek Islands, Croatian Coast, French Riviera & more."
+        title={page?.seoTitle || defaultContent.seoTitle}
+        description={page?.seoDescription || defaultContent.seoDescription}
         url="https://www.mediteranayachting.com/destinations"
       />
     </>

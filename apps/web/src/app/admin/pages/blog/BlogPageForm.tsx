@@ -12,6 +12,21 @@ import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import type { BlogPage } from '@/lib/db/schema';
 import Link from 'next/link';
 
+// Default content - must match what's shown on the public page
+const defaultContent = {
+  heroTitle: 'The Journal',
+  heroSubtitle: 'Insights, guides, and inspiration for your next Mediterranean adventure.',
+  heroImage: { url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&q=80', alt: 'Mediterranean seascape' },
+  introTitle: 'Latest Articles',
+  introDescription: '',
+  featuredTitle: '',
+  featuredSubtitle: '',
+  newsletterTitle: '',
+  newsletterDescription: '',
+  seoTitle: 'Yacht Charter Blog | Mediterranean Sailing Guides & Tips',
+  seoDescription: 'Expert insights, destination guides, and inspiration for your Mediterranean yacht charter. Learn about sailing routes, best seasons, yacht types, and insider tips.',
+};
+
 interface BlogPageFormProps {
   page?: BlogPage | null;
 }
@@ -20,23 +35,26 @@ export function BlogPageForm({ page }: BlogPageFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
-  const initialHeroImage = page?.heroImage ? JSON.parse(page.heroImage) : null;
+  // Parse hero image from database or use default
+  const initialHeroImage = page?.heroImage
+    ? JSON.parse(page.heroImage)
+    : defaultContent.heroImage;
   const [heroImage, setHeroImage] = useState<{ url: string; alt?: string } | null>(initialHeroImage);
 
-  // Rich text fields
-  const [introDescription, setIntroDescription] = useState(page?.introDescription || '');
-  const [newsletterDescription, setNewsletterDescription] = useState(page?.newsletterDescription || '');
+  // Rich text fields - use database value or default
+  const [introDescription, setIntroDescription] = useState(page?.introDescription || defaultContent.introDescription);
+  const [newsletterDescription, setNewsletterDescription] = useState(page?.newsletterDescription || defaultContent.newsletterDescription);
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
-      heroTitle: page?.heroTitle || '',
-      heroSubtitle: page?.heroSubtitle || '',
-      introTitle: page?.introTitle || '',
-      featuredTitle: page?.featuredTitle || '',
-      featuredSubtitle: page?.featuredSubtitle || '',
-      newsletterTitle: page?.newsletterTitle || '',
-      seoTitle: page?.seoTitle || '',
-      seoDescription: page?.seoDescription || '',
+      heroTitle: page?.heroTitle || defaultContent.heroTitle,
+      heroSubtitle: page?.heroSubtitle || defaultContent.heroSubtitle,
+      introTitle: page?.introTitle || defaultContent.introTitle,
+      featuredTitle: page?.featuredTitle || defaultContent.featuredTitle,
+      featuredSubtitle: page?.featuredSubtitle || defaultContent.featuredSubtitle,
+      newsletterTitle: page?.newsletterTitle || defaultContent.newsletterTitle,
+      seoTitle: page?.seoTitle || defaultContent.seoTitle,
+      seoDescription: page?.seoDescription || defaultContent.seoDescription,
     },
   });
 
@@ -92,12 +110,12 @@ export function BlogPageForm({ page }: BlogPageFormProps) {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="heroTitle">Title</Label>
-            <Input id="heroTitle" {...register('heroTitle')} placeholder="Our Blog" />
+            <Input id="heroTitle" {...register('heroTitle')} placeholder="The Journal" />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="heroSubtitle">Subtitle</Label>
-            <Input id="heroSubtitle" {...register('heroSubtitle')} placeholder="Stories from the sea..." />
+            <Input id="heroSubtitle" {...register('heroSubtitle')} placeholder="Insights, guides, and inspiration..." />
           </div>
 
           <ImagePicker

@@ -31,5 +31,7 @@ export {
   getAboutPage,
   getContactPage,
   getTeamMembers,
+  getBlogPage,
+  getDestinationsPage,
 } from './pages';
 export type { SiteSettingsData } from './pages';

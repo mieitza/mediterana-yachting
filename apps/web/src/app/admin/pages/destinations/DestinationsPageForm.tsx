@@ -12,6 +12,21 @@ import { RichTextEditor } from '@/components/admin/RichTextEditor';
 import type { DestinationsPage } from '@/lib/db/schema';
 import Link from 'next/link';
 
+// Default content - must match what's shown on the public page
+const defaultContent = {
+  heroTitle: 'Destinations',
+  heroSubtitle: 'From the azure waters of Greece to the glamorous ports of the French Riviera, discover your perfect Mediterranean escape.',
+  heroImage: { url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1920&q=80', alt: 'Mediterranean coastline' },
+  introTitle: '',
+  introDescription: '',
+  ctaTitle: 'Not sure where to go?',
+  ctaDescription: 'Our charter specialists can help you choose the perfect destination based on your interests, time of year, and preferred experiences.',
+  ctaButtonText: 'Get Expert Advice',
+  ctaButtonHref: '/contact',
+  seoTitle: 'Mediterranean Yacht Charter Destinations | Greece, Croatia, French Riviera',
+  seoDescription: 'Discover the best Mediterranean yacht charter destinations. Sail to Greek Islands, Croatian Coast, French Riviera, Amalfi Coast & more. Expert local knowledge, bespoke itineraries.',
+};
+
 interface DestinationsPageFormProps {
   page?: DestinationsPage | null;
 }
@@ -20,26 +35,31 @@ export function DestinationsPageForm({ page }: DestinationsPageFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
-  const initialHeroImage = page?.heroImage ? JSON.parse(page.heroImage) : null;
+  // Parse hero image from database or use default
+  const initialHeroImage = page?.heroImage
+    ? JSON.parse(page.heroImage)
+    : defaultContent.heroImage;
   const [heroImage, setHeroImage] = useState<{ url: string; alt?: string } | null>(initialHeroImage);
+
+  // CTA background image
   const [ctaBackgroundImage, setCtaBackgroundImage] = useState<{ url: string; alt?: string } | null>(
-    page?.ctaBackgroundImage ? { url: page.ctaBackgroundImage, alt: '' } : null
+    page?.ctaBackgroundImage ? JSON.parse(page.ctaBackgroundImage) : null
   );
 
-  // Rich text fields
-  const [introDescription, setIntroDescription] = useState(page?.introDescription || '');
-  const [ctaDescription, setCtaDescription] = useState(page?.ctaDescription || '');
+  // Rich text fields - use database value or default
+  const [introDescription, setIntroDescription] = useState(page?.introDescription || defaultContent.introDescription);
+  const [ctaDescription, setCtaDescription] = useState(page?.ctaDescription || defaultContent.ctaDescription);
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
-      heroTitle: page?.heroTitle || '',
-      heroSubtitle: page?.heroSubtitle || '',
-      introTitle: page?.introTitle || '',
-      ctaTitle: page?.ctaTitle || '',
-      ctaButtonText: page?.ctaButtonText || '',
-      ctaButtonHref: page?.ctaButtonHref || '',
-      seoTitle: page?.seoTitle || '',
-      seoDescription: page?.seoDescription || '',
+      heroTitle: page?.heroTitle || defaultContent.heroTitle,
+      heroSubtitle: page?.heroSubtitle || defaultContent.heroSubtitle,
+      introTitle: page?.introTitle || defaultContent.introTitle,
+      ctaTitle: page?.ctaTitle || defaultContent.ctaTitle,
+      ctaButtonText: page?.ctaButtonText || defaultContent.ctaButtonText,
+      ctaButtonHref: page?.ctaButtonHref || defaultContent.ctaButtonHref,
+      seoTitle: page?.seoTitle || defaultContent.seoTitle,
+      seoDescription: page?.seoDescription || defaultContent.seoDescription,
     },
   });
 
@@ -52,7 +72,7 @@ export function DestinationsPageForm({ page }: DestinationsPageFormProps) {
         introDescription: introDescription || null,
         ctaDescription: ctaDescription || null,
         heroImage: heroImage ? JSON.stringify(heroImage) : null,
-        ctaBackgroundImage: ctaBackgroundImage?.url || null,
+        ctaBackgroundImage: ctaBackgroundImage ? JSON.stringify(ctaBackgroundImage) : null,
       };
 
       const response = await fetch('/api/admin/pages/destinations', {
@@ -96,12 +116,12 @@ export function DestinationsPageForm({ page }: DestinationsPageFormProps) {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="heroTitle">Title</Label>
-            <Input id="heroTitle" {...register('heroTitle')} placeholder="Explore Our Destinations" />
+            <Input id="heroTitle" {...register('heroTitle')} placeholder="Destinations" />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="heroSubtitle">Subtitle</Label>
-            <Input id="heroSubtitle" {...register('heroSubtitle')} placeholder="Discover the Mediterranean's finest..." />
+            <Input id="heroSubtitle" {...register('heroSubtitle')} placeholder="From the azure waters of Greece..." />
           </div>
 
           <ImagePicker
@@ -116,11 +136,12 @@ export function DestinationsPageForm({ page }: DestinationsPageFormProps) {
       {/* Intro Section */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Introduction Section</h3>
+        <p className="text-sm text-slate-500 mb-4">Optional section that appears above the destinations grid</p>
 
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="introTitle">Title</Label>
-            <Input id="introTitle" {...register('introTitle')} placeholder="Charter Destinations" />
+            <Input id="introTitle" {...register('introTitle')} placeholder="Explore the Mediterranean" />
           </div>
 
           <RichTextEditor
@@ -140,21 +161,21 @@ export function DestinationsPageForm({ page }: DestinationsPageFormProps) {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="ctaTitle">Title</Label>
-            <Input id="ctaTitle" {...register('ctaTitle')} placeholder="Plan Your Journey" />
+            <Input id="ctaTitle" {...register('ctaTitle')} placeholder="Not sure where to go?" />
           </div>
 
           <RichTextEditor
             label="Description"
             value={ctaDescription}
             onChange={setCtaDescription}
-            placeholder="Encourage visitors to take action..."
+            placeholder="Our charter specialists can help you choose..."
             minHeight="80px"
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="ctaButtonText">Button Text</Label>
-              <Input id="ctaButtonText" {...register('ctaButtonText')} placeholder="Contact Us" />
+              <Input id="ctaButtonText" {...register('ctaButtonText')} placeholder="Get Expert Advice" />
             </div>
 
             <div className="space-y-2">
@@ -164,7 +185,7 @@ export function DestinationsPageForm({ page }: DestinationsPageFormProps) {
           </div>
 
           <ImagePicker
-            label="Background Image"
+            label="Background Image (optional)"
             value={ctaBackgroundImage}
             onChange={setCtaBackgroundImage}
             placeholder="Select a CTA background image from media library"

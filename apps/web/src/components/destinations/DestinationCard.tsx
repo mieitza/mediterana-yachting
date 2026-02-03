@@ -46,7 +46,7 @@ export function DestinationCard({
         <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
           <h3
             className={cn(
-              "font-serif font-medium",
+              "font-serif font-medium text-shadow",
               isLarge ? "text-3xl md:text-4xl" : "text-2xl"
             )}
           >
