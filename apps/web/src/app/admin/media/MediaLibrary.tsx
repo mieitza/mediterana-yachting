@@ -179,11 +179,12 @@ export function MediaLibrary({ images }: MediaLibraryProps) {
               className="group relative bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => setSelectedImage(image)}
             >
-              <div className="aspect-square bg-slate-100">
+              <div className="aspect-square bg-slate-100 relative overflow-hidden">
                 <img
                   src={image.url}
                   alt={image.alt || image.originalName}
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
               <div className="p-2">

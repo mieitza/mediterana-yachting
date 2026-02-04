@@ -239,7 +239,8 @@ export function ImagePicker({
                     <img
                       src={image.url}
                       alt={image.alt || image.originalName}
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
                     />
                     {value?.url === image.url && (
                       <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">

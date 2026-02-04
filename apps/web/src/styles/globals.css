@@ -78,7 +78,7 @@
     @apply transition-colors duration-base;
   }
 
-  img {
+  img:not([class*="absolute"]) {
     @apply max-w-full h-auto;
   }
 
