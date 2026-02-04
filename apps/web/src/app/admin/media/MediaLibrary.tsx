@@ -179,13 +179,17 @@ export function MediaLibrary({ images }: MediaLibraryProps) {
               className="group relative bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => setSelectedImage(image)}
             >
-              <div className="aspect-square bg-slate-100 relative overflow-hidden">
+              <div className="bg-slate-100 relative overflow-hidden" style={{ paddingBottom: '100%' }}>
                 <img
                   src={image.url}
                   alt={image.alt || image.originalName}
                   className="object-cover"
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
                   loading="lazy"
+                  onError={(e) => {
+                    console.error('Image failed to load:', image.url);
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               </div>
               <div className="p-2">

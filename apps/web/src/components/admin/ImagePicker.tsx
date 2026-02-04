@@ -230,17 +230,18 @@ export function ImagePicker({
                     key={image.id}
                     type="button"
                     onClick={() => handleSelect(image)}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                       value?.url === image.url
                         ? 'border-primary ring-2 ring-primary/20'
                         : 'border-transparent hover:border-slate-300'
                     }`}
+                    style={{ paddingBottom: '100%' }}
                   >
                     <img
                       src={image.url}
                       alt={image.alt || image.originalName}
                       className="object-cover"
-                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
                       loading="lazy"
                     />
                     {value?.url === image.url && (
