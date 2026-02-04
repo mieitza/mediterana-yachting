@@ -21,6 +21,7 @@ import {
   Info,
   Phone,
   Send,
+  Database,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -62,6 +63,7 @@ const navigation = [
       { name: 'Home', href: '/admin/pages/home', icon: Home },
       { name: 'About', href: '/admin/pages/about', icon: Info },
       { name: 'Contact', href: '/admin/pages/contact', icon: Phone },
+      { name: 'Yachts', href: '/admin/pages/yachts', icon: Ship },
       { name: 'Destinations', href: '/admin/pages/destinations', icon: MapPin },
       { name: 'Blog', href: '/admin/pages/blog', icon: FileText },
     ],
@@ -80,6 +82,11 @@ const navigation = [
     name: 'Settings',
     href: '/admin/settings',
     icon: Settings,
+  },
+  {
+    name: 'Backups',
+    href: '/admin/backups',
+    icon: Database,
   },
 ];
 

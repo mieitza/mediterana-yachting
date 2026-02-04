@@ -342,6 +342,35 @@ export const blogPage = sqliteTable('blog_page', {
 });
 
 // ============================================
+// Yachts Page (Singleton)
+// ============================================
+export const yachtsPage = sqliteTable('yachts_page', {
+  id: text('id').primaryKey().default('yachts-page'),
+  // Hero Section
+  heroTitle: text('hero_title'),
+  heroSubtitle: text('hero_subtitle'),
+  heroImage: text('hero_image'), // JSON: { url, alt }
+  // Intro Section
+  introTitle: text('intro_title'),
+  introDescription: text('intro_description'),
+  // FAQ Section
+  faqTitle: text('faq_title'),
+  faqSubtitle: text('faq_subtitle'),
+  // CTA Section
+  ctaTitle: text('cta_title'),
+  ctaDescription: text('cta_description'),
+  ctaButtonText: text('cta_button_text'),
+  ctaButtonHref: text('cta_button_href'),
+  ctaBackgroundImage: text('cta_background_image'),
+  // SEO
+  seoTitle: text('seo_title'),
+  seoDescription: text('seo_description'),
+  seoImage: text('seo_image'),
+  // Timestamps
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// ============================================
 // Custom Pages (Visual Editor)
 // ============================================
 export const pages = sqliteTable('pages', {
@@ -447,6 +476,7 @@ export type AboutPage = typeof aboutPage.$inferSelect;
 export type ContactPage = typeof contactPage.$inferSelect;
 export type DestinationsPage = typeof destinationsPage.$inferSelect;
 export type BlogPage = typeof blogPage.$inferSelect;
+export type YachtsPage = typeof yachtsPage.$inferSelect;
 
 export type Page = typeof pages.$inferSelect;
 export type NewPage = typeof pages.$inferInsert;

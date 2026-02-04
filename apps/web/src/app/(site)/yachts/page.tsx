@@ -7,20 +7,48 @@ import { CTASection } from "@/components/CTASection";
 import { FAQSection, yachtsFAQs } from "@/components/seo/FAQSection";
 import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getAllYachts } from "@/lib/data";
+import { db, yachtsPage } from "@/lib/db";
 
-export const metadata: Metadata = {
-  title: "Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts",
-  description: "Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter. Professional crew, premium amenities. Find your perfect yacht.",
-  alternates: {
-    canonical: "https://www.mediteranayachting.com/yachts",
-  },
-  openGraph: {
-    title: "Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts",
-    description: "Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter.",
-    url: "https://www.mediteranayachting.com/yachts",
-    type: "website",
-  },
+// Default content for fallback
+const defaultContent = {
+  heroTitle: 'Our Fleet',
+  heroSubtitle: 'Explore our curated selection of exceptional yachts, each handpicked for quality, comfort, and crew excellence.',
+  heroImage: { url: 'https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=1920&q=80', alt: 'Luxury yachts' },
+  faqTitle: 'Yacht Charter Questions',
+  faqSubtitle: 'Learn about our yacht types and charter options.',
+  ctaTitle: "Can't find what you're looking for?",
+  ctaDescription: "Our team has access to an extensive network of yachts. Let us know your requirements and we'll find the perfect match.",
+  ctaButtonText: 'Contact Us',
+  ctaButtonHref: '/contact',
+  seoTitle: 'Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts',
+  seoDescription: 'Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter. Professional crew, premium amenities. Find your perfect yacht.',
 };
+
+async function getYachtsPageContent() {
+  const page = db.select().from(yachtsPage).get();
+  return page;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getYachtsPageContent();
+
+  const title = page?.seoTitle || defaultContent.seoTitle;
+  const description = page?.seoDescription || defaultContent.seoDescription;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: "https://www.mediteranayachting.com/yachts",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "https://www.mediteranayachting.com/yachts",
+      type: "website",
+    },
+  };
+}
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
 
@@ -33,8 +61,16 @@ interface PageProps {
 }
 
 export default async function YachtsPage({ searchParams }: PageProps) {
-  const yachts = await getAllYachts();
+  const [yachts, pageContent] = await Promise.all([
+    getAllYachts(),
+    getYachtsPageContent(),
+  ]);
   const params = await searchParams;
+
+  // Parse hero image
+  const heroImage = pageContent?.heroImage
+    ? JSON.parse(pageContent.heroImage)
+    : defaultContent.heroImage;
 
   // Filter yachts based on query params
   let filteredYachts = [...yachts];
@@ -63,8 +99,8 @@ export default async function YachtsPage({ searchParams }: PageProps) {
       <section className="relative pt-32 pb-16 md:pt-40 md:pb-20">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=1920&q=80"
-            alt="Luxury yachts"
+            src={heroImage.url}
+            alt={heroImage.alt || "Luxury yachts"}
             fill
             className="object-cover"
             priority
@@ -73,9 +109,9 @@ export default async function YachtsPage({ searchParams }: PageProps) {
         </div>
 
         <div className="container mx-auto px-4 relative z-10 text-white text-center">
-          <h1 className="text-shadow">Our Fleet</h1>
+          <h1 className="text-shadow">{pageContent?.heroTitle || defaultContent.heroTitle}</h1>
           <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-            Explore our curated selection of exceptional yachts, each handpicked for quality, comfort, and crew excellence.
+            {pageContent?.heroSubtitle || defaultContent.heroSubtitle}
           </p>
         </div>
       </section>
@@ -115,16 +151,19 @@ export default async function YachtsPage({ searchParams }: PageProps) {
 
       {/* FAQ Section */}
       <FAQSection
-        title="Yacht Charter Questions"
-        subtitle="Learn about our yacht types and charter options."
+        title={pageContent?.faqTitle || defaultContent.faqTitle}
+        subtitle={pageContent?.faqSubtitle || defaultContent.faqSubtitle}
         items={yachtsFAQs}
       />
 
       {/* CTA */}
       <CTASection
-        title="Can't find what you're looking for?"
-        subtitle="Our team has access to an extensive network of yachts. Let us know your requirements and we'll find the perfect match."
-        primaryCta={{ label: "Contact Us", href: "/contact" }}
+        title={pageContent?.ctaTitle || defaultContent.ctaTitle}
+        subtitle={pageContent?.ctaDescription || defaultContent.ctaDescription}
+        primaryCta={{
+          label: pageContent?.ctaButtonText || defaultContent.ctaButtonText,
+          href: pageContent?.ctaButtonHref || defaultContent.ctaButtonHref
+        }}
         variant="light"
       />
 
@@ -136,8 +175,8 @@ export default async function YachtsPage({ searchParams }: PageProps) {
         ]}
       />
       <WebPageSchema
-        title="Luxury Yacht Charter Fleet | Motor Yachts & Sailing Yachts"
-        description="Browse our curated fleet of luxury motor yachts, sailing yachts, and catamarans for Mediterranean charter."
+        title={pageContent?.seoTitle || defaultContent.seoTitle}
+        description={pageContent?.seoDescription || defaultContent.seoDescription}
         url="https://www.mediteranayachting.com/yachts"
       />
     </>
