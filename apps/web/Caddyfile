@@ -1,5 +1,19 @@
+{
+    admin off
+}
+
 {$DOMAIN:localhost}, www.{$DOMAIN:localhost} {
-    reverse_proxy web:3000
+    # Serve uploads directly from the mounted volume
+    handle /uploads/* {
+        root * /srv
+        file_server
+    }
+
+    # Everything else goes to Next.js
+    handle {
+        reverse_proxy web:3000
+    }
+
     encode gzip
 
     header {
