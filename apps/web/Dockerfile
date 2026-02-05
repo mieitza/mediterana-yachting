@@ -40,6 +40,7 @@ COPY --from=builder /app/.next/static ./.next/static
 # Create data directory for SQLite
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
+RUN mkdir -p /app/backups && chown -R nextjs:nodejs /app/backups
 # Create cache directory for Next.js Image Optimization
 RUN mkdir -p /app/.next/cache && chown -R nextjs:nodejs /app/.next/cache
 

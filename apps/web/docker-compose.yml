@@ -7,6 +7,8 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_PATH=/app/data/mediterana.db
+      - BACKUP_DIR=/app/backups
+      - BACKUP_MODE=local
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
@@ -17,6 +19,7 @@ services:
     volumes:
       - sqlite_data:/app/data
       - uploads:/app/public/uploads
+      - backups:/app/backups
     networks:
       - web
 
@@ -26,6 +29,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN:-mediteranayachting.com}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -38,6 +43,7 @@ services:
 volumes:
   sqlite_data:
   uploads:
+  backups:
   caddy_data:
   caddy_config:
 
