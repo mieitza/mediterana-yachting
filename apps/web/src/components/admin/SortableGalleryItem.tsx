@@ -2,8 +2,8 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, X, Pencil } from 'lucide-react';
-import { useState } from 'react';
+import { GripVertical, X, Pencil, AlertCircle } from 'lucide-react';
+import { useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -29,6 +29,23 @@ export function SortableGalleryItem({
 }: SortableGalleryItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [altText, setAltText] = useState(image.alt || '');
+  const [retryCount, setRetryCount] = useState(0);
+  const [hasError, setHasError] = useState(false);
+  const maxRetries = 3;
+
+  const handleImageError = useCallback(() => {
+    if (retryCount < maxRetries) {
+      setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        setHasError(false);
+      }, 1000 * (retryCount + 1));
+    } else {
+      setHasError(true);
+    }
+  }, [retryCount]);
+
+  // Add cache-busting query param on retry
+  const imageUrl = retryCount > 0 ? `${image.url}?retry=${retryCount}` : image.url;
 
   const {
     attributes,
@@ -68,12 +85,21 @@ export function SortableGalleryItem({
       }`}
     >
       {/* Image */}
-      <div className="aspect-square">
-        <img
-          src={image.url}
-          alt={image.alt || `Gallery image ${index + 1}`}
-          className="w-full h-full object-cover"
-        />
+      <div className="aspect-square bg-slate-100">
+        {hasError ? (
+          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+            <AlertCircle className="h-6 w-6 mb-1" />
+            <span className="text-xs">Failed</span>
+          </div>
+        ) : (
+          <img
+            key={retryCount}
+            src={imageUrl}
+            alt={image.alt || `Gallery image ${index + 1}`}
+            className="w-full h-full object-cover"
+            onError={handleImageError}
+          />
+        )}
       </div>
 
       {/* Drag Handle */}

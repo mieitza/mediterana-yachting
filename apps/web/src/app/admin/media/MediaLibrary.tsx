@@ -13,6 +13,7 @@ import {
   Loader2,
   Search,
   X,
+  AlertCircle,
 } from 'lucide-react';
 import {
   Dialog,
@@ -26,6 +27,93 @@ import type { Image } from '@/lib/db/schema';
 
 interface MediaLibraryProps {
   images: Image[];
+}
+
+// Shared utility function
+const formatFileSize = (bytes: number) => {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// Image component with retry logic
+function ImageWithRetry({ image, onClick, copiedUrl, onCopyUrl }: {
+  image: Image;
+  onClick: () => void;
+  copiedUrl: string | null;
+  onCopyUrl: (url: string) => void;
+}) {
+  const [retryCount, setRetryCount] = useState(0);
+  const [hasError, setHasError] = useState(false);
+  const maxRetries = 3;
+
+  const handleError = useCallback(() => {
+    if (retryCount < maxRetries) {
+      // Retry after a delay
+      setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        setHasError(false);
+      }, 1000 * (retryCount + 1));
+    } else {
+      setHasError(true);
+    }
+  }, [retryCount]);
+
+  // Add cache-busting query param on retry
+  const imageUrl = retryCount > 0 ? `${image.url}?retry=${retryCount}` : image.url;
+
+  return (
+    <div
+      className="group relative bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+      onClick={onClick}
+    >
+      <div className="bg-slate-100 relative overflow-hidden" style={{ paddingBottom: '100%' }}>
+        {hasError ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+            <AlertCircle className="h-8 w-8 mb-1" />
+            <span className="text-xs">Failed to load</span>
+          </div>
+        ) : (
+          <img
+            key={retryCount} // Force re-mount on retry
+            src={imageUrl}
+            alt={image.alt || image.originalName}
+            className="object-cover"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            loading="lazy"
+            onError={handleError}
+          />
+        )}
+      </div>
+      <div className="p-2">
+        <p className="text-xs text-slate-600 truncate">
+          {image.originalName}
+        </p>
+        <p className="text-xs text-slate-400">
+          {image.width}x{image.height} • {formatFileSize(image.size || 0)}
+        </p>
+      </div>
+
+      {/* Quick actions on hover */}
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          size="sm"
+          variant="secondary"
+          className="h-8 w-8 p-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCopyUrl(image.url);
+          }}
+        >
+          {copiedUrl === image.url ? (
+            <Check className="h-4 w-4 text-green-600" />
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export function MediaLibrary({ images }: MediaLibraryProps) {
@@ -104,12 +192,6 @@ export function MediaLibrary({ images }: MediaLibraryProps) {
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
   return (
     <div className="space-y-6">
       {/* Actions */}
@@ -174,52 +256,13 @@ export function MediaLibrary({ images }: MediaLibraryProps) {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {filteredImages.map((image) => (
-            <div
+            <ImageWithRetry
               key={image.id}
-              className="group relative bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+              image={image}
               onClick={() => setSelectedImage(image)}
-            >
-              <div className="bg-slate-100 relative overflow-hidden" style={{ paddingBottom: '100%' }}>
-                <img
-                  src={image.url}
-                  alt={image.alt || image.originalName}
-                  className="object-cover"
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                  loading="lazy"
-                  onError={(e) => {
-                    console.error('Image failed to load:', image.url);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              </div>
-              <div className="p-2">
-                <p className="text-xs text-slate-600 truncate">
-                  {image.originalName}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {image.width}x{image.height} • {formatFileSize(image.size || 0)}
-                </p>
-              </div>
-
-              {/* Quick actions on hover */}
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="h-8 w-8 p-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyUrl(image.url);
-                  }}
-                >
-                  {copiedUrl === image.url ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
+              copiedUrl={copiedUrl}
+              onCopyUrl={copyUrl}
+            />
           ))}
         </div>
       )}
