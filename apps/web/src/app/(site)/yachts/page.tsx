@@ -8,6 +8,7 @@ import { FAQSection, yachtsFAQs } from "@/components/seo/FAQSection";
 import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getAllYachts } from "@/lib/data";
 import { db, yachtsPage } from "@/lib/db";
+import { resolveImage } from "@/lib/data/utils";
 
 // Default content for fallback
 const defaultContent = {
@@ -67,9 +68,9 @@ export default async function YachtsPage({ searchParams }: PageProps) {
   ]);
   const params = await searchParams;
 
-  // Parse hero image
+  // Parse hero image and resolve relative URLs for Next.js Image optimization
   const heroImage = pageContent?.heroImage
-    ? JSON.parse(pageContent.heroImage)
+    ? resolveImage(JSON.parse(pageContent.heroImage)) || defaultContent.heroImage
     : defaultContent.heroImage;
 
   // Filter yachts based on query params

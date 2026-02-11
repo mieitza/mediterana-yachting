@@ -61,6 +61,7 @@ export async function getHomePage() {
     heroCtas: page.heroCtas ? JSON.parse(page.heroCtas) : null,
     whyMediteranaFeatures: page.whyMediteranaFeatures ? JSON.parse(page.whyMediteranaFeatures) : null,
     processSteps: page.processSteps ? JSON.parse(page.processSteps) : null,
+    faqItems: page.faqItems ? JSON.parse(page.faqItems) : null,
   };
 }
 

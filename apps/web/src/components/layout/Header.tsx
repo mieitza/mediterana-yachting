@@ -13,7 +13,7 @@ const navigation = [
   { name: "Yachts", href: "/yachts" },
   { name: "Destinations", href: "/destinations" },
   { name: "About", href: "/about" },
-  { name: "Blog", href: "/blog" },
+  { name: "Journal", href: "/blog" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -61,7 +61,7 @@ export function Header() {
           <Link
             href="/"
             className={cn(
-              "font-serif text-xl md:text-2xl font-medium tracking-tight transition-colors",
+              "font-serif text-2xl md:text-3xl font-medium tracking-tight transition-colors",
               textColor
             )}
           >

@@ -201,6 +201,10 @@ export const homePage = sqliteTable('home_page', {
   processTitle: text('process_title'),
   processSubtitle: text('process_subtitle'),
   processSteps: text('process_steps'), // JSON array
+  // FAQ Section
+  faqTitle: text('faq_title'),
+  faqSubtitle: text('faq_subtitle'),
+  faqItems: text('faq_items'), // JSON array: [{ question, answer }]
   // Blog Section
   blogTitle: text('blog_title'),
   blogSubtitle: text('blog_subtitle'),

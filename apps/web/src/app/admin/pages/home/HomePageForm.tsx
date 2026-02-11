@@ -28,6 +28,11 @@ interface ProcessStep {
   description: string;
 }
 
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export function HomePageForm({ page }: HomePageFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -36,6 +41,9 @@ export function HomePageForm({ page }: HomePageFormProps) {
   );
   const [processSteps, setProcessSteps] = useState<ProcessStep[]>(
     page?.processSteps ? JSON.parse(page.processSteps) : []
+  );
+  const [faqItems, setFaqItems] = useState<FAQItem[]>(
+    page?.faqItems ? JSON.parse(page.faqItems) : []
   );
 
   const initialHeroImage = page?.heroImage ? JSON.parse(page.heroImage) : null;
@@ -60,6 +68,8 @@ export function HomePageForm({ page }: HomePageFormProps) {
       whyMediteranaSubtitle: page?.whyMediteranaSubtitle || '',
       processTitle: page?.processTitle || '',
       processSubtitle: page?.processSubtitle || '',
+      faqTitle: page?.faqTitle || '',
+      faqSubtitle: page?.faqSubtitle || '',
       blogTitle: page?.blogTitle || '',
       blogSubtitle: page?.blogSubtitle || '',
       ctaTitle: page?.ctaTitle || '',
@@ -101,6 +111,20 @@ export function HomePageForm({ page }: HomePageFormProps) {
     setProcessSteps(processSteps.filter((_, i) => i !== index));
   };
 
+  const addFaqItem = () => {
+    setFaqItems([...faqItems, { question: '', answer: '' }]);
+  };
+
+  const updateFaqItem = (index: number, field: keyof FAQItem, value: string) => {
+    const updated = [...faqItems];
+    updated[index][field] = value;
+    setFaqItems(updated);
+  };
+
+  const removeFaqItem = (index: number) => {
+    setFaqItems(faqItems.filter((_, i) => i !== index));
+  };
+
   const onSubmit = async (data: Record<string, string>) => {
     setIsSaving(true);
 
@@ -113,6 +137,7 @@ export function HomePageForm({ page }: HomePageFormProps) {
         ctaBackgroundImage: ctaBackgroundImage?.url || null,
         whyMediteranaFeatures: features.length > 0 ? JSON.stringify(features) : null,
         processSteps: processSteps.length > 0 ? JSON.stringify(processSteps) : null,
+        faqItems: faqItems.length > 0 ? JSON.stringify(faqItems) : null,
       };
 
       const response = await fetch('/api/admin/pages/home', {
@@ -316,6 +341,62 @@ export function HomePageForm({ page }: HomePageFormProps) {
               </Button>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">FAQ Section</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="space-y-2">
+            <Label htmlFor="faqTitle">Title</Label>
+            <Input id="faqTitle" {...register('faqTitle')} placeholder="Frequently Asked Questions" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="faqSubtitle">Subtitle</Label>
+            <Input id="faqSubtitle" {...register('faqSubtitle')} placeholder="Everything you need to know..." />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <Label>Questions & Answers</Label>
+            <Button type="button" variant="outline" size="sm" onClick={addFaqItem}>
+              <Plus className="h-4 w-4 mr-1" /> Add Question
+            </Button>
+          </div>
+
+          {faqItems.map((item, index) => (
+            <div key={index} className="p-4 border border-slate-200 rounded-lg space-y-3">
+              <div className="flex gap-2 items-start">
+                <div className="flex-1 space-y-3">
+                  <Input
+                    placeholder="Question"
+                    value={item.question}
+                    onChange={(e) => updateFaqItem(index, 'question', e.target.value)}
+                  />
+                  <textarea
+                    placeholder="Answer"
+                    value={item.answer}
+                    onChange={(e) => updateFaqItem(index, 'answer', e.target.value)}
+                    rows={3}
+                    className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <Button type="button" variant="ghost" size="sm" onClick={() => removeFaqItem(index)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+
+          {faqItems.length === 0 && (
+            <p className="text-sm text-slate-500 text-center py-4">
+              No FAQ items added. Default FAQ content will be shown on the homepage.
+            </p>
+          )}
         </div>
       </div>
 

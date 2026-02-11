@@ -248,9 +248,9 @@ export default async function AboutPage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto">
               {team.map((member) => (
-                <div key={member.id} className="text-center">
+                <div key={member.id} className="text-center w-full md:w-64">
                   <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden mb-4">
                     {member.image?.url && (
                       <Image

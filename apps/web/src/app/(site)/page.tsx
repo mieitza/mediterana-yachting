@@ -15,6 +15,7 @@ import {
   getLatestPosts,
   getHomePage,
 } from "@/lib/data";
+import { resolveImage } from "@/lib/data/utils";
 
 export const metadata: Metadata = {
   title: "Mediterranean Yacht Charter | Luxury Sailing & Motor Yachts | Mediterana Yachting",
@@ -80,6 +81,9 @@ const defaultContent = {
   ctaButtonText: "Enquire Now",
   ctaButtonHref: "/contact",
   ctaBackgroundImage: null as string | null,
+  faqTitle: null as string | null,
+  faqSubtitle: null as string | null,
+  faqItems: null as any[] | null,
 };
 
 async function getData() {
@@ -115,9 +119,9 @@ export default async function HomePage() {
     : defaultContent.processSteps;
 
   const heroImage = page.heroImage
-    ? (typeof page.heroImage === 'string'
+    ? resolveImage(typeof page.heroImage === 'string'
         ? JSON.parse(page.heroImage)
-        : page.heroImage)
+        : page.heroImage) || defaultContent.heroImage
     : defaultContent.heroImage;
 
   return (
@@ -204,18 +208,8 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* First destination - large, spans 2 cols */}
-            {destinations[0] && (
-              <DestinationCard
-                key={destinations[0].id}
-                destination={destinations[0]}
-                variant="large"
-                className="md:col-span-2 md:row-span-2"
-              />
-            )}
-            {/* Remaining destinations - regular size */}
-            {destinations.slice(1, 4).map((destination) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {destinations.slice(0, 6).map((destination) => (
               <DestinationCard
                 key={destination.id}
                 destination={destination}
@@ -324,9 +318,9 @@ export default async function HomePage() {
 
       {/* FAQ Section */}
       <FAQSection
-        title="Frequently Asked Questions"
-        subtitle="Everything you need to know about chartering a yacht in the Mediterranean."
-        items={homepageFAQs}
+        title={page.faqTitle || "Frequently Asked Questions"}
+        subtitle={page.faqSubtitle || "Everything you need to know about chartering a yacht in the Mediterranean."}
+        items={page.faqItems || homepageFAQs}
       />
 
       {/* CTA Section */}

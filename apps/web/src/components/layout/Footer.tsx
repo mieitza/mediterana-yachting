@@ -41,7 +41,7 @@ const fallbackData: FooterData = {
   ],
   footerCompanyLinks: [
     { label: "About Us", href: "/about" },
-    { label: "Blog", href: "/blog" },
+    { label: "Journal", href: "/blog" },
     { label: "Contact", href: "/contact" },
   ],
   footerLegalLinks: [
@@ -51,7 +51,7 @@ const fallbackData: FooterData = {
   copyrightText: "Mediterana Yachting",
   contactEmail: "hello@mediteranayachting.com",
   contactPhone: "+30 123 456 789",
-  contactAddress: "Athens, Greece",
+  contactAddress: "Athens, Greece\nBucharest, Romania",
   socialLinks: {
     instagram: "#",
     facebook: "#",
@@ -215,12 +215,19 @@ export async function Footer() {
                 </li>
               )}
               {(data.contactAddress || fallbackData.contactAddress) && (
-                <li>
-                  <span className="text-white/70 text-sm flex items-center gap-2">
-                    <MapPin className="h-4 w-4 flex-shrink-0" />
-                    {data.contactAddress || fallbackData.contactAddress}
-                  </span>
-                </li>
+                <>
+                  {(data.contactAddress || fallbackData.contactAddress)!
+                    .split("\n")
+                    .filter(Boolean)
+                    .map((addr, i) => (
+                      <li key={i}>
+                        <span className="text-white/70 text-sm flex items-center gap-2">
+                          <MapPin className="h-4 w-4 flex-shrink-0" />
+                          {addr.trim()}
+                        </span>
+                      </li>
+                    ))}
+                </>
               )}
             </ul>
           </div>
