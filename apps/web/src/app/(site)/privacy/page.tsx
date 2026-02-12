@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
       {/* Content */}
       <section className="section-padding bg-bg-base">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto prose prose-lg">
+          <div className="max-w-3xl mx-auto prose prose-lg prose-luxury">
             <h2>Introduction</h2>
             <p>
               Mediterana Yachting (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects your privacy and is committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information when you visit our website or use our services.

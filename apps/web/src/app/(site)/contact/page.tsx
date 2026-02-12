@@ -5,6 +5,7 @@ import { InquiryForm } from "@/components/forms/InquiryForm";
 import { FAQSection } from "@/components/seo/FAQSection";
 import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getContactPage } from "@/lib/data";
+import { stripHtml } from "@/lib/utils/html";
 
 export const revalidate = 0; // Disable caching to always fetch fresh data
 
@@ -114,7 +115,7 @@ export default async function ContactPage() {
         <div className="container mx-auto px-4 relative z-10 text-white text-center">
           <h1 className="text-shadow">{page?.heroTitle || defaultContent.heroTitle}</h1>
           <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-            {page?.heroSubtitle || defaultContent.heroSubtitle}
+            {stripHtml(page?.heroSubtitle || defaultContent.heroSubtitle)}
           </p>
         </div>
       </section>

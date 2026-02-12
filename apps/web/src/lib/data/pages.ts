@@ -16,7 +16,11 @@ export interface SiteSettingsData {
   youtube: string | null;
   whatsapp: string | null;
   footerTagline: string | null;
-  footerLinks: Array<{ label: string; href: string }> | null;
+  footerLinks: {
+    charter?: Array<{ label: string; href: string }>;
+    company?: Array<{ label: string; href: string }>;
+    legal?: Array<{ label: string; href: string }>;
+  } | null;
   copyrightText: string | null;
   featuredYachts: string[] | null;
   defaultSeoImage: string | null;

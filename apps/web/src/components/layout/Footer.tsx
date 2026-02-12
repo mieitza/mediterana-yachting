@@ -70,9 +70,9 @@ async function getFooterData(): Promise<FooterData> {
     return {
       siteName: settings.siteName || fallbackData.siteName,
       footerTagline: settings.footerTagline || fallbackData.footerTagline,
-      footerCharterLinks: fallbackData.footerCharterLinks,
-      footerCompanyLinks: fallbackData.footerCompanyLinks,
-      footerLegalLinks: fallbackData.footerLegalLinks,
+      footerCharterLinks: settings.footerLinks?.charter?.length ? settings.footerLinks.charter : fallbackData.footerCharterLinks,
+      footerCompanyLinks: settings.footerLinks?.company?.length ? settings.footerLinks.company : fallbackData.footerCompanyLinks,
+      footerLegalLinks: settings.footerLinks?.legal?.length ? settings.footerLinks.legal : fallbackData.footerLegalLinks,
       copyrightText: settings.copyrightText || fallbackData.copyrightText,
       contactEmail: settings.contactEmail || fallbackData.contactEmail,
       contactPhone: settings.contactPhone || fallbackData.contactPhone,

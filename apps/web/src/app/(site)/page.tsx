@@ -16,6 +16,7 @@ import {
   getHomePage,
 } from "@/lib/data";
 import { resolveImage } from "@/lib/data/utils";
+import { stripHtml } from "@/lib/utils/html";
 
 export const metadata: Metadata = {
   title: "Mediterranean Yacht Charter | Luxury Sailing & Motor Yachts | Mediterana Yachting",
@@ -147,7 +148,7 @@ export default async function HomePage() {
             <span className="text-sand">{page.heroHighlight || defaultContent.heroHighlight}</span>
           </h1>
           <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl mx-auto animate-in" style={{ animationDelay: "0.1s" }}>
-            {page.heroSubtitle || defaultContent.heroSubtitle}
+            {stripHtml(page.heroSubtitle || defaultContent.heroSubtitle)}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 animate-in" style={{ animationDelay: "0.2s" }}>
             <Button asChild size="xl" className="bg-sand text-navy hover:bg-sand/90">

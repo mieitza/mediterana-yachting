@@ -9,6 +9,7 @@ import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData
 import { getAllYachts } from "@/lib/data";
 import { db, yachtsPage } from "@/lib/db";
 import { resolveImage } from "@/lib/data/utils";
+import { stripHtml } from "@/lib/utils/html";
 
 // Default content for fallback
 const defaultContent = {
@@ -112,7 +113,7 @@ export default async function YachtsPage({ searchParams }: PageProps) {
         <div className="container mx-auto px-4 relative z-10 text-white text-center">
           <h1 className="text-shadow">{pageContent?.heroTitle || defaultContent.heroTitle}</h1>
           <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-            {pageContent?.heroSubtitle || defaultContent.heroSubtitle}
+            {stripHtml(pageContent?.heroSubtitle || defaultContent.heroSubtitle)}
           </p>
         </div>
       </section>

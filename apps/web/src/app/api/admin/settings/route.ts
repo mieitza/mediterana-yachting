@@ -45,6 +45,7 @@ export async function PUT(request: Request) {
       youtube: body.youtube || null,
       whatsapp: body.whatsapp || null,
       footerTagline: body.footerTagline || null,
+      footerLinks: body.footerLinks || null,
       copyrightText: body.copyrightText || null,
       defaultSeoImage: body.defaultSeoImage || null,
       twitterHandle: body.twitterHandle || null,

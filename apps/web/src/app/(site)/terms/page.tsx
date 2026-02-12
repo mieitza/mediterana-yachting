@@ -22,7 +22,7 @@ export default function TermsOfServicePage() {
       {/* Content */}
       <section className="section-padding bg-bg-base">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto prose prose-lg">
+          <div className="max-w-3xl mx-auto prose prose-lg prose-luxury">
             <h2>Agreement to Terms</h2>
             <p>
               By accessing or using the Mediterana Yachting website and services, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please do not use our services.

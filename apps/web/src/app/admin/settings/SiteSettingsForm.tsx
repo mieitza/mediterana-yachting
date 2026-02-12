@@ -8,11 +8,39 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, Plus, X } from 'lucide-react';
 import { ImagePicker } from '@/components/admin/ImagePicker';
 import { ImageSelector } from '@/components/admin/ImageSelector';
 import { SERPPreview } from '@/components/admin/seo/SERPPreview';
 import type { SiteSettings } from '@/lib/db/schema';
+
+interface FooterLink {
+  label: string;
+  href: string;
+}
+
+interface FooterLinks {
+  charter: FooterLink[];
+  company: FooterLink[];
+  legal: FooterLink[];
+}
+
+const defaultFooterLinks: FooterLinks = {
+  charter: [
+    { label: 'Our Yachts', href: '/yachts' },
+    { label: 'Destinations', href: '/destinations' },
+    { label: 'Charter Process', href: '/about#process' },
+  ],
+  company: [
+    { label: 'About Us', href: '/about' },
+    { label: 'Journal', href: '/blog' },
+    { label: 'Contact', href: '/contact' },
+  ],
+  legal: [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+  ],
+};
 
 const siteSettingsSchema = z.object({
   siteName: z.string().min(1, 'Site name is required'),
@@ -44,6 +72,32 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
 
   const initialLogo = settings?.logo ? JSON.parse(settings.logo) : null;
   const [logo, setLogo] = useState<{ url: string; alt?: string } | null>(initialLogo);
+  const [footerLinks, setFooterLinks] = useState<FooterLinks>(
+    settings?.footerLinks ? JSON.parse(settings.footerLinks) : defaultFooterLinks
+  );
+
+  const updateLink = (group: keyof FooterLinks, index: number, field: keyof FooterLink, value: string) => {
+    setFooterLinks(prev => {
+      const updated = { ...prev };
+      updated[group] = [...prev[group]];
+      updated[group][index] = { ...updated[group][index], [field]: value };
+      return updated;
+    });
+  };
+
+  const addLink = (group: keyof FooterLinks) => {
+    setFooterLinks(prev => ({
+      ...prev,
+      [group]: [...prev[group], { label: '', href: '' }],
+    }));
+  };
+
+  const removeLink = (group: keyof FooterLinks, index: number) => {
+    setFooterLinks(prev => ({
+      ...prev,
+      [group]: prev[group].filter((_, i) => i !== index),
+    }));
+  };
 
   const {
     register,
@@ -84,6 +138,7 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
       const payload = {
         ...data,
         logo: logo ? JSON.stringify(logo) : null,
+        footerLinks: JSON.stringify(footerLinks),
       };
 
       const response = await fetch('/api/admin/settings', {
@@ -161,8 +216,15 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="contactAddress">Address</Label>
-            <Input id="contactAddress" {...register('contactAddress')} placeholder="Riva 16, Split, Croatia" />
+            <Label htmlFor="contactAddress">Address(es)</Label>
+            <textarea
+              id="contactAddress"
+              {...register('contactAddress')}
+              rows={2}
+              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder={"Athens, Greece\nBucharest, Romania"}
+            />
+            <p className="text-xs text-slate-500">One address per line. Each will show with its own map pin in the footer.</p>
           </div>
         </div>
       </div>
@@ -234,6 +296,46 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
             <Input id="copyrightText" {...register('copyrightText')} placeholder="© 2024 Mediterana Yachting. All rights reserved." />
           </div>
         </div>
+      </div>
+
+      {/* Footer Links */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">Footer Links</h3>
+
+        {(['charter', 'company', 'legal'] as const).map((group) => (
+          <div key={group} className="mb-6 last:mb-0">
+            <div className="flex justify-between items-center mb-3">
+              <Label className="capitalize">{group} Links</Label>
+              <Button type="button" variant="outline" size="sm" onClick={() => addLink(group)}>
+                <Plus className="h-4 w-4 mr-1" /> Add
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {footerLinks[group].map((link, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <Input
+                    placeholder="Label"
+                    value={link.label}
+                    onChange={(e) => updateLink(group, index, 'label', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Input
+                    placeholder="/path or URL"
+                    value={link.href}
+                    onChange={(e) => updateLink(group, index, 'href', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="ghost" size="sm" onClick={() => removeLink(group, index)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {footerLinks[group].length === 0 && (
+                <p className="text-sm text-slate-500 py-2">No links. Add one above.</p>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Default SEO */}
