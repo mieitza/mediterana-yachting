@@ -9,6 +9,7 @@ import { PostCard } from "@/components/blog/PostCard";
 import { CTASection } from "@/components/CTASection";
 import { BreadcrumbSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { getPostBySlug, getLatestPosts } from "@/lib/data";
+import { stripHtml } from "@/lib/utils/html";
 
 export const dynamic = 'force-dynamic'; // Always render dynamically
 export const revalidate = 0; // Disable caching to always fetch fresh data
@@ -31,13 +32,13 @@ export async function generateMetadata({
 
   return {
     title: post.seoTitle || post.title,
-    description: post.seoDescription || post.excerpt || undefined,
+    description: post.seoDescription || (post.excerpt ? stripHtml(post.excerpt) : undefined),
     alternates: {
       canonical: url,
     },
     openGraph: {
       title: post.title,
-      description: post.excerpt || undefined,
+      description: post.excerpt ? stripHtml(post.excerpt) : undefined,
       url,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
@@ -80,7 +81,7 @@ export default async function BlogPostPage({
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
-    description: post.excerpt,
+    description: post.excerpt ? stripHtml(post.excerpt) : undefined,
     image: post.coverImage?.url,
     url: `https://www.mediteranayachting.com/blog/${slug}`,
     datePublished: post.publishedAt?.toISOString(),
@@ -118,7 +119,7 @@ export default async function BlogPostPage({
       />
       <WebPageSchema
         title={post.title}
-        description={post.excerpt || ""}
+        description={post.excerpt ? stripHtml(post.excerpt) : ""}
         url={`https://www.mediteranayachting.com/blog/${slug}`}
         dateModified={post.publishedAt?.toISOString()}
       />

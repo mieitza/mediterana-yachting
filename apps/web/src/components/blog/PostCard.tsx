@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Tag } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { stripHtml } from "@/lib/utils/html";
 import type { PostData } from "@/lib/types";
 
 interface PostCardProps {
@@ -89,7 +90,7 @@ export function PostCard({ post, variant = "default", className }: PostCardProps
                 isFeatured ? "line-clamp-3" : "line-clamp-2 text-sm"
               )}
             >
-              {post.excerpt}
+              {stripHtml(post.excerpt)}
             </p>
           )}
 
