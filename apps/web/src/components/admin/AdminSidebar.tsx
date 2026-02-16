@@ -79,6 +79,11 @@ const navigation = [
     icon: Send,
   },
   {
+    name: 'Email Templates',
+    href: '/admin/email-templates',
+    icon: Mail,
+  },
+  {
     name: 'Settings',
     href: '/admin/settings',
     icon: Settings,

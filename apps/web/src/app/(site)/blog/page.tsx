@@ -80,7 +80,7 @@ export default async function BlogPage() {
             {(page?.featuredTitle || page?.featuredSubtitle) && (
               <div className="text-center mb-8">
                 {page?.featuredTitle && <h2 className="text-2xl md:text-3xl">{page.featuredTitle}</h2>}
-                {page?.featuredSubtitle && <p className="mt-2 text-text-secondary">{page.featuredSubtitle}</p>}
+                {page?.featuredSubtitle && <p className="mt-2 text-text-secondary">{stripHtml(page.featuredSubtitle)}</p>}
               </div>
             )}
             <PostCard post={featuredPost} variant="featured" />

@@ -97,7 +97,7 @@ export default function TermsOfServicePage() {
               For questions about these Terms of Service, please contact us:
             </p>
             <ul>
-              <li>Email: <a href="mailto:hello@mediteranayachting.com">hello@mediteranayachting.com</a></li>
+              <li>Email: <a href="mailto:charter@mediteranayachting.com">charter@mediteranayachting.com</a></li>
               <li>Visit our <Link href="/contact">Contact Page</Link></li>
             </ul>
 

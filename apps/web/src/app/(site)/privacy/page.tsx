@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
               If you have any questions about this privacy policy or our data practices, please contact us:
             </p>
             <ul>
-              <li>Email: <a href="mailto:hello@mediteranayachting.com">hello@mediteranayachting.com</a></li>
+              <li>Email: <a href="mailto:charter@mediteranayachting.com">charter@mediteranayachting.com</a></li>
               <li>Visit our <Link href="/contact">Contact Page</Link></li>
             </ul>
           </div>

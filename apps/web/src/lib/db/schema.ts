@@ -454,6 +454,26 @@ export const newsletterSubscribers = sqliteTable('newsletter_subscribers', {
 });
 
 // ============================================
+// Email Templates
+// ============================================
+export const emailTemplates = sqliteTable('email_templates', {
+  id: text('id').primaryKey().default('email-templates'),
+  // Inquiry confirmation email
+  inquirySubject: text('inquiry_subject'),
+  inquiryBody: text('inquiry_body'),
+  // Newsletter welcome email
+  welcomeSubject: text('welcome_subject'),
+  welcomeBody: text('welcome_body'),
+  // Shared
+  senderName: text('sender_name'),
+  signatureText: text('signature_text'),
+  contactEmail: text('contact_email'),
+  contactPhone: text('contact_phone'),
+  // Timestamps
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// ============================================
 // Type Exports
 // ============================================
 export type User = typeof users.$inferSelect;
@@ -490,3 +510,5 @@ export type NewInquiry = typeof inquiries.$inferInsert;
 
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type NewNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;
+
+export type EmailTemplate = typeof emailTemplates.$inferSelect;

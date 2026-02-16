@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 import { db, newsletterSubscribers } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
-import { formatWelcomeEmail } from '@/lib/newsletter/templates';
+import { getWelcomeEmail } from '@/lib/email/templates';
 
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -135,14 +135,15 @@ export async function POST(request: NextRequest) {
     const resend = getResendClient();
     if (resend) {
       try {
+        const welcome = getWelcomeEmail({
+          name: data.name,
+          unsubscribeToken,
+        });
         await resend.emails.send({
           from: 'Mediterana Yachting <noreply@mediteranayachting.com>',
           to: data.email,
-          subject: 'Welcome Aboard - Mediterana Yachting',
-          text: formatWelcomeEmail({
-            name: data.name,
-            unsubscribeToken,
-          }),
+          subject: welcome.subject,
+          text: welcome.body,
         });
       } catch (emailError) {
         console.error('Failed to send welcome email:', emailError);

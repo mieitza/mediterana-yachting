@@ -28,7 +28,7 @@ The Mediterana Yachting Team
 
 ---
 Mediterana Yachting
-hello@mediteranayachting.com
+charter@mediteranayachting.com
 +30 123 456 789
 
 To unsubscribe, visit: ${unsubscribeUrl}

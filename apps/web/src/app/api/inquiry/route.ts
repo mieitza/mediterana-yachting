@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { db, inquiries, yachts, destinations } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { getInquiryConfirmation } from "@/lib/email/templates";
 
 // Lazy-initialize Resend only when API key is available
 function getResendClient() {
@@ -98,25 +99,12 @@ Reply directly to this email to respond to the customer.
   return body.trim();
 }
 
-function formatConfirmationEmail(data: InquiryData): string {
-  return `
-Dear ${data.name},
-
-Thank you for your inquiry. We have received your message and a member of our team will be in touch within 24 hours.
-
-${data.yachtName ? `You expressed interest in: ${data.yachtName}` : ""}
-${data.destinationName ? `You're interested in exploring: ${data.destinationName}` : ""}
-
-In the meantime, feel free to browse our fleet at https://www.mediteranayachting.com/yachts or explore our destinations at https://www.mediteranayachting.com/destinations.
-
-Best regards,
-The Mediterana Yachting Team
-
----
-Mediterana Yachting
-hello@mediteranayachting.com
-+30 123 456 789
-`.trim();
+function formatConfirmationEmail(data: InquiryData): { subject: string; body: string } {
+  return getInquiryConfirmation({
+    name: data.name,
+    yachtName: data.yachtName,
+    destinationName: data.destinationName,
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -176,7 +164,7 @@ export async function POST(request: NextRequest) {
       status: 'new',
     }).run();
 
-    const contactEmail = process.env.CONTACT_EMAIL || "hello@mediteranayachting.com";
+    const contactEmail = process.env.CONTACT_EMAIL || "charter@mediteranayachting.com";
 
     // Check if Resend is configured
     const resend = getResendClient();
@@ -199,11 +187,12 @@ export async function POST(request: NextRequest) {
     });
 
     // Send confirmation email to customer
+    const confirmation = formatConfirmationEmail(data);
     await resend.emails.send({
       from: "Mediterana Yachting <noreply@mediteranayachting.com>",
       to: data.email,
-      subject: "Thank you for your inquiry - Mediterana Yachting",
-      text: formatConfirmationEmail(data),
+      subject: confirmation.subject,
+      text: confirmation.body,
     });
 
     return NextResponse.json({

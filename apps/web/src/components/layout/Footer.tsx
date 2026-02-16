@@ -33,7 +33,7 @@ interface FooterData {
 // Fallback data
 const fallbackData: FooterData = {
   siteName: "Mediterana Yachting",
-  footerTagline: "Experience the Mediterranean in unparalleled luxury. We match you with the right yacht, crew, and itinerary — discreetly, precisely.",
+  footerTagline: "Experience the Mediterranean in unparalleled luxury. We match you with the right yacht, crew and itinerary.",
   footerCharterLinks: [
     { label: "Our Yachts", href: "/yachts" },
     { label: "Destinations", href: "/destinations" },
@@ -49,7 +49,7 @@ const fallbackData: FooterData = {
     { label: "Terms of Service", href: "/terms" },
   ],
   copyrightText: "Mediterana Yachting",
-  contactEmail: "hello@mediteranayachting.com",
+  contactEmail: "charter@mediteranayachting.com",
   contactPhone: "+30 123 456 789",
   contactAddress: "Athens, Greece\nBucharest, Romania",
   socialLinks: {

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { stripHtml } from "@/lib/utils/html";
 
 interface CTASectionProps {
   title?: string;
@@ -71,7 +72,7 @@ export function CTASection({
               isDark ? "text-white/80" : "text-text-secondary"
             )}
           >
-            {subtitle}
+            {subtitle ? stripHtml(subtitle) : subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">

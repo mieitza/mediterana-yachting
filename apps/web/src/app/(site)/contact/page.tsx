@@ -16,7 +16,7 @@ const defaultContent = {
   heroImage: { url: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1920&q=80", alt: "Mediterranean marina" },
   contactTitle: "Contact Information",
   contactDescription: "Reach out directly or fill in the form and we'll get back to you within 24 hours.",
-  email: "hello@mediteranayachting.com",
+  email: "charter@mediteranayachting.com",
   phone: "+30 123 456 789",
   whatsapp: "+30123456789",
   location: "Athens, Greece",
