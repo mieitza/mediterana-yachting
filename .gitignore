@@ -48,3 +48,6 @@ playwright-report
 data/*.db
 data/*.db-shm
 data/*.db-wal
+
+# Admin-uploaded media (production serves these from a docker volume)
+apps/web/public/uploads/
